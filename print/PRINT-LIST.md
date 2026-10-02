@@ -14,7 +14,7 @@ All A4, single-sided, mono. ~150 groups over 3 days (~50/day).
 **Totals:** 9 laminating pouches · 186 sheets of paper (~4 laminated + 177 plain beyond the pouches).
 
 Before printing page 6: `www.infosecbattlebots.com/schools` and
-`github.com/Ben-PyroGuy-Doch/ibb-arena` must both exist, since both are printed on it.
+`github.com/Ben-PyroGuy-Doch/IBB-Arena-STEM-Challenge` must both exist, since both are printed on it.
 
 Also bring: clipboard + pens for the leaderboard, Blu Tack / poster stand, a box for the
 teacher sheets (or hand them over at the end of each slot).

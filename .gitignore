@@ -16,3 +16,6 @@ site/server/daemon/
 Thumbs.db
 .vscode/
 .claude/
+
+# Local backups of retired repos (not published)
+archive/
