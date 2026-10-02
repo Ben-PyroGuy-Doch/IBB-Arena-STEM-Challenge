@@ -7,6 +7,14 @@ questions fires the arena weapons.
 
 ![status](https://img.shields.io/badge/status-live-brightgreen) ![code: Apache 2.0](https://img.shields.io/badge/code-Apache%202.0-blue.svg) ![docs: CC BY 4.0](https://img.shields.io/badge/docs-CC%20BY%204.0-lightgrey.svg)
 
+## Screenshots
+
+| Team iPad | Right answer fires | Referee: bot fight + standings |
+|---|---|---|
+| ![Team iPad](docs/screenshots/1-team-ipad.jpg) | ![Correct](docs/screenshots/3-correct-fires.jpg) | ![Referee](docs/screenshots/6-referee-botfight.jpg) |
+
+More in [`docs/screenshots/`](docs/screenshots).
+
 ## How it fits together
 
 ```
