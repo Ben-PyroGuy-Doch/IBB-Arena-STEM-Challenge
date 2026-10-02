@@ -45,6 +45,7 @@ the 192.168.80.x side is never exposed.
 | [`deploy.sh`](deploy.sh) | One-command deploy to the arena server |
 | [`DEPLOY.md`](DEPLOY.md) | Deploying, server access setup, rollback, troubleshooting |
 | [`LICENSE`](LICENSE) · [`LICENSE-docs`](LICENSE-docs) · [`NOTICE`](NOTICE) | Code under Apache 2.0, docs and questions under CC BY 4.0, both require credit. The IBB name and logo are not covered |
+| [`print/stemfest-pack.pdf`](print/stemfest-pack.pdf) | Mono-printable A4 pack for STEMfest Newcastle 2026: poster, briefing script, weapons card, referee sheet, leaderboard, teacher take-away. Source: `stemfest-pack.html` |
 | [`docs/HOW-TO-PLAY.md`](docs/HOW-TO-PLAY.md) | Rules, scoring and referee cheat sheet for event volunteers |
 | [`docs/copilot-handover.txt`](docs/copilot-handover.txt) | Architecture notes from the first build (the PINs in it are stale) |
 

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Earn to Fire - STEMfest Newcastle print pack</title>
+<!--
+  Print pack for STEMfest Newcastle, 6-8 Oct 2026. Designed for a MONO laser printer:
+  no meaning carried by colour, no large dark fills (toner), greys kept light.
+  Render: msedge --headless --print-to-pdf=stemfest-pack.pdf stemfest-pack.html
+-->
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { margin: 0; padding: 0; background: #fff; color: #000;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; }
+  .page { width: 210mm; height: 297mm; padding: 12mm 14mm 11mm; position: relative; overflow: hidden;
+    page-break-after: always; break-after: page; }
+  .page:last-child { page-break-after: auto; break-after: auto; }
+
+  .head { display: flex; align-items: center; gap: 5mm; padding-bottom: 3mm; border-bottom: 1.2mm solid #000; margin-bottom: 5mm; }
+  .head img { height: 19mm; filter: grayscale(1) contrast(1.2); }
+  .head .t { font-size: 12.5pt; font-weight: 700; line-height: 1.25; }
+  .head .t b { font-size: 17pt; font-weight: 900; letter-spacing: .5pt; }
+  h1 { font-size: 46pt; margin: 0; line-height: 1; font-weight: 900; letter-spacing: 1pt; }
+  h2 { font-size: 17pt; margin: 5mm 0 2mm; font-weight: 900; }
+  h3 { font-size: 13pt; margin: 0 0 1.5mm; font-weight: 800; }
+  p, li { font-size: 11.5pt; line-height: 1.4; margin: 0 0 2mm; }
+  ul, ol { margin: 0 0 2mm; padding-left: 6mm; }
+  .small { font-size: 9.5pt; color: #333; }
+  .foot { position: absolute; bottom: 7mm; left: 14mm; right: 14mm; font-size: 8.5pt; color: #444;
+    display: flex; justify-content: space-between; border-top: 0.3mm solid #000; padding-top: 2mm; }
+
+  .cols { display: flex; gap: 5mm; }
+  .cols > * { flex: 1; }
+  .box { border: 0.4mm solid #000; border-radius: 3mm; padding: 4mm 5mm; }
+  .box.thick { border-width: 1.2mm; }
+  .box.dash { border-style: dashed; }
+  .box.grey { background: #eee; }
+  .icon { font-size: 26pt; line-height: 1; margin-bottom: 1.5mm; }
+  .num { display: inline-block; width: 10mm; height: 10mm; border-radius: 50%; border: 0.8mm solid #000;
+    text-align: center; line-height: 8.4mm; font-weight: 900; font-size: 13pt; margin-right: 2.5mm; vertical-align: middle; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 2.2mm 2.5mm; border-bottom: 0.3mm solid #000; font-size: 11pt; vertical-align: middle; }
+  th { font-size: 9.5pt; text-transform: uppercase; letter-spacing: .5pt; border-bottom: 0.8mm solid #000; }
+  td.pts { font-size: 20pt; font-weight: 900; text-align: center; }
+  .wtab td { padding: 3.2mm 3mm; }
+  .wtab .ic { font-size: 22pt; width: 14mm; text-align: center; }
+  .wtab .nm { font-size: 15pt; font-weight: 900; }
+  .boss td { background: #eee; }
+
+  .big-pts { font-size: 30pt; font-weight: 900; line-height: 1; }
+  .tick { display: inline-block; width: 5mm; height: 5mm; border: 0.5mm solid #000; border-radius: 1mm; margin-right: 2.5mm; vertical-align: -1mm; }
+  .chk li { list-style: none; margin-left: -6mm; }
+  .warn { border: 1.2mm solid #000; border-radius: 3mm; padding: 3.5mm 5mm; }
+  .lb th, .lb td { border: 0.3mm solid #000; height: 8.6mm; padding: 1mm 2mm; font-size: 10pt; }
+  .lb th { height: auto; background: #eee; }
+  code { font-family: Consolas, monospace; border: 0.3mm solid #999; padding: 0.2mm 1.4mm; border-radius: 1mm; font-size: 10pt; }
+
+  /* team markers: shape not colour, so they survive a mono printer */
+  .tm { display: inline-block; width: 4.5mm; height: 4.5mm; border: 0.6mm solid #000; vertical-align: -0.6mm; margin-right: 1.5mm; }
+  .tm.red { background: #000; border-radius: 50%; }
+  .tm.blue { background: #fff; border-radius: 0; }
+
+  /* briefing page: read-aloud script, huge type */
+  .say { font-size: 19pt; line-height: 1.35; margin: 0 0 4.5mm; }
+  .say b { font-weight: 900; }
+  .cue { font-size: 10pt; text-transform: uppercase; letter-spacing: 1pt; font-weight: 800; color: #444; margin: 0 0 1mm; }
+  .slot td { font-size: 10.5pt; }
+  .tk h2 { font-size: 15pt; margin: 3.5mm 0 1.5mm; }
+  .tk td { padding: 1.4mm 2.5mm; font-size: 10.5pt; }
+  .tk p, .tk li { font-size: 11pt; margin-bottom: 1.4mm; }
+  .tk .box { padding: 3mm 5mm; }
+  .ref td, .ref th { padding: 1.5mm 2mm; font-size: 10pt; }
+  .ref p, .ref li { font-size: 10.5pt; margin-bottom: 1.3mm; }
+  .ref h2 { font-size: 15pt; margin: 3.5mm 0 1.5mm; }
+  .slot td.t { font-weight: 900; width: 20mm; }
+</style>
+</head>
+<body>
+
+<!-- ======================= 1. POSTER ======================= -->
+<section class="page">
+  <div class="head">
+    <img src="../site/public/assets/ibb-logo.png" alt="InfoSec Battle Bots">
+    <div class="t">STEMfest Newcastle<br>Tuesday 6 &ndash; Thursday 8 October 2026</div>
+  </div>
+  <h1>EARN TO FIRE</h1>
+  <p style="font-size:18pt; font-weight:700; margin:3mm 0 6mm;">Answer STEM questions. Fire the arena. Battle the bots.</p>
+
+  <div class="cols">
+    <div class="box thick"><div class="icon">&#129504;</div><h3>Think</h3>
+      <p>Your team answers robot science, maths and coding questions on an iPad.</p></div>
+    <div class="box thick"><div class="icon">&#9889;</div><h3>Fire</h3>
+      <p>Get one right and a real arena hazard fires: the flipper, the pit or the spinners.</p></div>
+    <div class="box thick"><div class="icon">&#129302;</div><h3>Fight</h3>
+      <p>Your drivers battle bots in the arena. Keep yours out of the pit!</p></div>
+  </div>
+
+  <h2>Two teams. Two bots each. Two minutes.</h2>
+  <p>Your group splits into <b>Red</b> and <b>Blue</b>. Two of each team drive the bots; the rest
+  are the brains on the iPad. Your score is <b>STEM points + bot points</b>, so the brains and the
+  drivers both win it for you.</p>
+
+  <h2>What you'll learn</h2>
+  <table>
+    <tr><td style="width:50%;">&#9889; <b>Forces &amp; levers</b>: how a flipper lifts a robot</td><td>&#128187; <b>Code &amp; logic</b>: loops, binary, IF statements</td></tr>
+    <tr><td>&#128371;&#65039; <b>Circuits &amp; electricity</b>: volts, amps, Ohm's law</td><td>&#129302; <b>Sensors &amp; robot brains</b>: how robots sense the world</td></tr>
+    <tr><td>&#9881;&#65039; <b>Gears &amp; motion</b>: speed, RPM, gear ratios</td><td>&#127786;&#65039; <b>Boss challenge</b>: energy, momentum and more</td></tr>
+  </table>
+  <p style="margin-top:3mm;">Got one wrong? The iPad explains the right answer, so you learn something either way.</p>
+
+  <h2>How does the arena work?</h2>
+  <p>Each iPad talks over WiFi to a small server. The server sends the command to a
+  <b>Raspberry Pi</b>, a credit-card-sized computer, which switches the motors and the
+  pneumatics. <b>Look through the clear front of the arena base to see the tech!</b></p>
+
+  <div class="warn" style="margin-top:5mm;">
+    <b>&#9888; Safety:</b> the arena hazards only move when our referee has <b>armed</b> it, and
+    they switch themselves off after a few seconds. Never reach into the arena. Bots go in and
+    out only when the referee says so.
+  </div>
+
+  <div class="foot"><span>InfoSec Battle Bots &middot; infosecbattlebots.com</span><span>Ages 12&ndash;14 &middot; Groups of about 10</span></div>
+</section>
+
+<!-- ======================= 2. 60-SECOND BRIEFING ======================= -->
+<section class="page">
+  <div class="head"><img src="../site/public/assets/ibb-logo.png" alt=""><div class="t"><b>EARN TO FIRE</b><br>60-second briefing &middot; read it out</div></div>
+
+  <p class="cue">Split the group</p>
+  <p class="say">"You're two teams: <b>Red</b> and <b>Blue</b>. In each team, <b>two of you drive a bot</b>.
+  Everyone else is the <b>brains</b> on your team's iPad."</p>
+
+  <p class="cue">The brains</p>
+  <p class="say">"Tap a weapon and answer the question. <b>Get it right and that weapon fires for real</b>,
+  and you score its points. Get it wrong and the iPad tells you why. Then try a different weapon."</p>
+
+  <p class="cue">The drivers</p>
+  <p class="say">"Keep your bots <b>out of the pit</b>. You score a point every second each bot survives.
+  Push the other team's bots in and your team gets <b>50 points</b> for each one!"</p>
+
+  <p class="cue">Teamwork tip</p>
+  <p class="say">"Brains: watch where their bots are. <b>Fire the hazards when their bots are close!</b>"</p>
+
+  <p class="cue">Safety</p>
+  <p class="say">"<b>Hands stay out of the arena.</b> If I say <b>STOP</b>, everyone stops."</p>
+
+  <p class="cue">Go</p>
+  <p class="say">"Two minutes on the clock. Highest score wins. <b>Ready? Go!</b>"</p>
+
+  <div class="box dash" style="margin-top:4mm;">
+    <p style="margin:0;"><b>Group of 10:</b> <span class="tm red"></span><b>Red</b> 5 (2 drivers + 3 brains) vs
+    <span class="tm blue"></span><b>Blue</b> 5 (2 drivers + 3 brains). Odd numbers: the extra joins
+    the brains. Small group? One driver per team can drive both bots in turn.</p>
+  </div>
+
+  <div class="foot"><span>Keep with the referee iPad</span><span>Page 2 &middot; Briefing script</span></div>
+</section>
+
+<!-- ======================= 3. WEAPONS CARD ======================= -->
+<section class="page">
+  <div class="head"><img src="../site/public/assets/ibb-logo.png" alt=""><div class="t"><b>EARN TO FIRE</b><br>Weapons &amp; points</div></div>
+  <p style="font-size:14pt;">Tap a weapon on the iPad and answer its question.<br><b>Right answer = it FIRES and you score.</b></p>
+
+  <table class="wtab">
+    <thead><tr><th></th><th>Weapon</th><th>Question topic</th><th style="text-align:center;">Points</th><th>Recharge</th></tr></thead>
+    <tbody>
+      <tr><td class="ic">&#9889;</td><td class="nm">Flipper</td><td>Forces &amp; levers</td><td class="pts">10</td><td>8 s</td></tr>
+      <tr><td class="ic">&#128371;&#65039;</td><td class="nm">The Pit</td><td>Circuits &amp; electricity</td><td class="pts">15</td><td>20 s</td></tr>
+      <tr><td class="ic">&#9881;&#65039;</td><td class="nm">Spinner 1</td><td>Gears &amp; motion</td><td class="pts">20</td><td>15 s</td></tr>
+      <tr><td class="ic">&#128187;</td><td class="nm">Spinner 2</td><td>Code &amp; logic</td><td class="pts">20</td><td>15 s</td></tr>
+      <tr><td class="ic">&#129302;</td><td class="nm">Spinner 3</td><td>Sensors &amp; robot brains</td><td class="pts">20</td><td>15 s</td></tr>
+      <tr class="boss"><td class="ic">&#127786;&#65039;</td><td class="nm">MEGA SPIN</td><td><b>Boss challenge</b><br>(all three spinners!)</td><td class="pts">50</td><td>30 s</td></tr>
+    </tbody>
+  </table>
+
+  <div class="cols" style="margin-top:6mm;">
+    <div class="box thick">
+      <h3>&#129302; Bot points</h3>
+      <p><span class="big-pts">+1</span> &nbsp;every second, for each of your bots still in</p>
+      <p><span class="big-pts">+50</span> &nbsp;for each of the other team's bots pitted</p>
+    </div>
+    <div class="box">
+      <h3>Remember</h3>
+      <p><b>Wrong answer?</b> Read why, then wait 15 s before that weapon again. Try another meanwhile!</p>
+      <p><b>Recharge is shared.</b> Fire it first and the other team has to wait.</p>
+    </div>
+  </div>
+
+  <div class="box thick" style="margin-top:6mm; text-align:center;">
+    <p style="font-size:18pt; margin:0;"><b>YOUR SCORE = STEM POINTS + BOT POINTS</b></p>
+  </div>
+
+  <div class="foot"><span>Print two: one beside each team iPad</span><span>Page 3 &middot; Weapons card</span></div>
+</section>
+
+<!-- ======================= 4. REFEREE SHEET ======================= -->
+<section class="page">
+  <div class="head"><img src="../site/public/assets/ibb-logo.png" alt=""><div class="t"><b>EARN TO FIRE</b><br>Referee &amp; volunteer sheet</div></div>
+
+  <div class="cols ref">
+    <div>
+      <h2 style="margin-top:0;">The 7-minute slot</h2>
+      <table class="slot">
+        <tr><td class="t">0:00</td><td>Group arrives. <b>New round (everything)</b>. Split into Red / Blue</td></tr>
+        <tr><td class="t">0:30</td><td>Read the <b>briefing</b> (page 2). Drivers take controllers</td></tr>
+        <tr><td class="t">1:30</td><td>Hands out. <b>ARM</b>. <b>START</b> the clock</td></tr>
+        <tr><td class="t">3:30</td><td>Round ends. <b>DISARM</b>. Read out the Standings</td></tr>
+        <tr><td class="t">4:00</td><td>Winner! Leaderboard line. Teacher handout (page 6)</td></tr>
+        <tr><td class="t">5:00</td><td>Bots back to start. Next group in</td></tr>
+      </table>
+      <p class="small">~50 groups a day. Longer slot? Play a second round and swap drivers and brains.</p>
+
+      <h2>Start of each day</h2>
+      <ul class="chk">
+        <li><span class="tick"></span>Team iPads: <code>http://192.168.0.102/kids/</code>, pick Red / Blue</li>
+        <li><span class="tick"></span>Referee iPad: <code>/kids/admin.html</code>, PIN from the lead (never written down)</li>
+        <li><span class="tick"></span>Shows <b>SAFE</b>; both iPads say <b>PRACTICE MODE</b></li>
+        <li><span class="tick"></span>One practice answer per weapon: scores move, arena doesn't</li>
+        <li><span class="tick"></span>Arena clear. <b>ARM</b>, fire each weapon, watch it stop</li>
+        <li><span class="tick"></span><b>ALL STOP</b>: everything stops, back to SAFE</li>
+        <li><span class="tick"></span>Bot batteries charged; spares on charge</li>
+      </ul>
+    </div>
+    <div>
+      <div class="warn">
+        <h3>&#9888; Safety rules</h3>
+        <ul>
+          <li><b>DISARM before any hand goes near the arena.</b> Every time.</li>
+          <li><b>ALL STOP</b> = disarm + stop clock + all spinners off. Use it freely.</li>
+          <li>Spinners stop themselves after 5 s; the pit comes back up after 10 s.</li>
+          <li>If the server drops out mid-spin, a spinner may keep going. <b>Switch off arena power.</b></li>
+          <li>After any restart the arena comes back <b>SAFE</b>.</li>
+        </ul>
+      </div>
+
+      <h2>During the round</h2>
+      <p>Tap <b>PITTED</b> under a bot the moment it drops. Mis-tap? <b>Undo</b>.
+      Both of a team's bots pitted = <b>KNOCKOUT</b>, the round ends.</p>
+
+      <h2>Buttons</h2>
+      <table>
+        <tr><td><b>SAFE / ARMED</b></td><td>SAFE = practice: answers score, nothing moves</td></tr>
+        <tr><td><b>START / STOP</b></td><td>Clock. STOP pauses the questions too</td></tr>
+        <tr><td><b>RESET</b></td><td>Clock back to 2:00, fresh fight</td></tr>
+        <tr><td><b>&plusmn;5 / &plusmn;10</b></td><td>Fix STEM points by hand</td></tr>
+        <tr><td><b>Clear cooldowns</b></td><td>Unstick the weapons</td></tr>
+      </table>
+
+      <h2>If something goes wrong</h2>
+      <table>
+        <tr><td><i>Cannot reach the arena</i></td><td>Check iPad WiFi, reload page</td></tr>
+        <tr><td>Right answer, nothing moved</td><td>ARMED? Check log for <i>Pi FAILED</i></td></tr>
+        <tr><td>Referee page shows PIN screen</td><td>Server restarted; log in (it's SAFE)</td></tr>
+        <tr><td>5 wrong PINs</td><td>Locked 60 s; wait, retry</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="foot"><span>Keep with the referee iPad</span><span>Page 4 &middot; Referee sheet</span></div>
+</section>
+
+<!-- ======================= 5. LEADERBOARD ======================= -->
+<section class="page">
+  <div class="head"><img src="../site/public/assets/ibb-logo.png" alt=""><div class="t"><b>EARN TO FIRE</b><br>Leaderboard &middot; Day: ____________ &middot; Sheet ___</div></div>
+
+  <div class="cols" style="margin-bottom:4mm;">
+    <div class="box thick" style="text-align:center;"><h3>Top team score today</h3><div style="height:8mm;"></div></div>
+    <div class="box thick" style="text-align:center;"><h3>Best STEM score today</h3><div style="height:8mm;"></div></div>
+  </div>
+
+  <table class="lb">
+    <thead><tr><th style="width:10%;">Time</th><th style="width:30%;">School / group</th>
+      <th style="width:12%;"><span class="tm red"></span>Red</th><th style="width:12%;"><span class="tm blue"></span>Blue</th>
+      <th style="width:12%;">Winner</th><th style="width:9%;">KO?</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+  <p class="small" style="margin-top:2.5mm;">Red / Blue = team totals from the referee iPad's <b>Standings</b> (STEM + bot points).
+  KO = both of one team's bots pitted. 20 groups per sheet, so <b>print 3 per day</b> (9 for the event).</p>
+
+  <div class="foot"><span>InfoSec Battle Bots &middot; STEMfest Newcastle, 6&ndash;8 October 2026</span><span>Page 5 &middot; Leaderboard</span></div>
+</section>
+
+<!-- ======================= 6. TEACHER TAKE-AWAY ======================= -->
+<section class="page tk">
+  <div class="head"><img src="../site/public/assets/ibb-logo.png" alt=""><div class="t"><b>EARN TO FIRE</b><br>For teachers: what your group just did</div></div>
+
+  <p style="font-size:12.5pt;">Your class played <b>Earn to Fire</b> with InfoSec Battle Bots at STEMfest Newcastle. In two
+  teams, students answered STEM questions to fire real hazards in a robot combat arena while
+  classmates drove the robots. Every wrong answer came with an explanation.</p>
+
+  <h2>Topics covered (KS3)</h2>
+  <table>
+    <tr><td style="width:36%;"><b>Forces &amp; levers</b></td><td>Fulcrums, Newton's laws, weight = mass &times; g, centre of gravity</td></tr>
+    <tr><td><b>Circuits &amp; electricity</b></td><td>Ohm's law (V = I &times; R), P = V &times; I, series circuits, fuses, short circuits</td></tr>
+    <tr><td><b>Gears &amp; motion</b></td><td>Speed = distance / time, RPM, gear ratios, circumference</td></tr>
+    <tr><td><b>Code &amp; logic</b></td><td>Variables, loops, IF statements, binary, AND / NOT</td></tr>
+    <tr><td><b>Sensors &amp; robot brains</b></td><td>Ultrasonic ranging, inputs vs outputs, actuators, microcontrollers</td></tr>
+  </table>
+
+  <h2>Back in class: five follow-up questions</h2>
+  <ol>
+    <li>A spinner weapon spins <b>twice as fast</b>. Why does it hit <b>four times</b> harder? <span class="small">(KE = &frac12;mv&sup2;)</span></li>
+    <li>A 12 V battery drives a 4 &Omega; motor. What current flows, and how much power does it use?</li>
+    <li>Design a pit-avoiding robot: which sensor would you use, and what would your <b>IF</b> statement say?</li>
+    <li>Why do battle robots use a <b>low centre of gravity</b>? Sketch a robot that is hard to flip.</li>
+    <li>Count to 31 in binary on one hand. How high can you count with two hands?</li>
+  </ol>
+  <p class="small">Answers: (1) energy grows with speed squared, so 2&sup2; = 4; (2) 3 A, 36 W; (3) e.g. a downward
+  light or ultrasonic sensor: IF floor not detected THEN reverse; (4) it must be lifted further before it tips;
+  (5) 1023 (10 bits).</p>
+
+  <h2>How the arena works</h2>
+  <p>The iPads talk over WiFi to a Windows server running a Node.js program. It checks each answer,
+  then sends commands to a <b>Raspberry Pi</b>, which switches the motors and pneumatics. It is real
+  networking, coding and electronics: a good talking point for careers in engineering and cyber security.</p>
+
+  <div class="box thick" style="margin-top:3mm;">
+    <h3>Bring InfoSec Battle Bots to your school</h3>
+    <p>Our schools programme is led by <b>Lewis Terry</b>. For school visits, workshops and
+    follow-up resources, get in touch:</p>
+    <table>
+      <tr><td style="width:28%;"><b>Email</b></td><td>info@infosecbattlebots.com <span class="small">(mark it "Schools")</span></td></tr>
+      <tr><td><b>Schools page</b></td><td>www.infosecbattlebots.com/schools</td></tr>
+      <tr><td><b>Follow us</b></td><td>@InfosecBots on X</td></tr>
+      <tr><td><b>The game's code</b></td><td>github.com/Ben-PyroGuy-Doch/ibb-arena <span class="small">(open source)</span></td></tr>
+    </table>
+  </div>
+
+  <div class="foot"><span>InfoSec Battle Bots &middot; STEMfest Newcastle, 6&ndash;8 October 2026</span><span>Page 6 &middot; Teacher take-away</span></div>
+</section>
+
+</body>
+</html>
