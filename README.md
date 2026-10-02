@@ -192,3 +192,10 @@ Open source, credit required:
 
 Use it, adapt it and run your own arena. Keep the [`NOTICE`](NOTICE) file or credit
 Ben Docherty / InfoSec Battle Bots. The IBB name and logo are not licensed for reuse.
+
+## Hardware test — 2 Oct 2026 ✅
+Driven from the referee page on the PC, arena watching live. Every Pi command returned OK
+(0 failures): flipper, pit down/up, spinners 1–3 and their auto-offs, MEGA SPIN + `/spinnersoff`,
+ALL STOP (disarms + spinners off). Round clock, per-bot PITTED, knockout and bot scoring all
+behaved as designed (KO: Red 2×survival + 2×50 = 120, Blue 23 s + 50 = 73).
+Not yet exercised on real hardware: **kids answering on a team iPad** (and an actual iOS 9–10 iPad).
