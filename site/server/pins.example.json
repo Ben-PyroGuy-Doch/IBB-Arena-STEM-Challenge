@@ -1,0 +1,22 @@
+{
+  "0000": {
+    "page": "arena_Root.html",
+    "role": "root"
+  },
+  "0001": {
+    "page": "arena_Flipper.html",
+    "role": "flipper"
+  },
+  "0002": {
+    "page": "arena_Pit.html",
+    "role": "pit"
+  },
+  "0003": {
+    "page": "arena_Spinners.html",
+    "role": "spinners"
+  },
+  "0004": {
+    "page": "arena_Crane.html",
+    "role": "crane"
+  }
+}

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>IBB Arena Root Control</title>
+
+  <style>
+    body {
+      background-color: #0f0f0f;
+      color: #f5f5f5;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 2em;
+    }
+    h1 { color: #f1c40f; text-shadow: 1px 1px 4px #000; margin: 10px 0 24px; }
+    h2 { color: #f1c40f; margin: 12px 0; }
+
+    .button-group {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      max-width: 960px; margin: 0 auto 16px;
+    }
+    button {
+      background-color: #e63946;
+      color: #f5f5f5;
+      font-size: 1.05em;
+      padding: 12px 20px;
+      margin: 8px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(230, 57, 70, 0.6);
+      transition: all 0.15s ease-in-out;
+    }
+    button:hover {
+      background-color: #f1c40f;
+      color: #0f0f0f;
+      box-shadow: 0 0 15px #f1c40f;
+    }
+
+    .status {
+      margin: 12px auto;
+      max-width: 1000px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      text-align: left;
+      font-family: Consolas, Menlo, monospace;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      white-space: pre-wrap;
+      min-height: 56px;
+    }
+
+    .control-container { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+    .control-panel, .visual-panel { flex: 1; min-width: 320px; text-align: center; }
+
+    .joystick-container {
+      width: 150px; height: 150px; background-color: #333;
+      border-radius: 50%; position: relative; margin: 20px auto; overflow: hidden;
+    }
+    #craneJoystick {
+      width: 50px; height: 50px; background-color: #f1c40f; border-radius: 50%;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      cursor: grab; transition: transform 0.1s ease-out;
+    }
+    .pos { color: #9ee493; }
+  </style>
+
+  <!-- Role Gate -->
+  <script>
+    (function gate() {
+      const token = sessionStorage.getItem('arenaToken');
+      if (!token) location.href = 'index.html';
+      try {
+        const decoded = JSON.parse(atob(token));
+        if (decoded.role !== 'root') location.href = 'index.html';
+      } catch {
+        location.href = 'index.html';
+      }
+    })();
+  </script>
+</head>
+
+<body>
+  assets/ibb-logo.png
+
+  <h1>Arena Dashboard (Root)</h1>
+
+  <div id="status" class="status"></div>
+
+  <!-- PIT -->
+  <div class="button-group">
+    <h2 style="width:100%;">Pit Controls</h2>
+    <button onclick="callApiText('/api/pit-up', 'Pit')">Pit Up</button>
+    <button onclick="callApiText('/api/pit-down', 'Pit')">Pit Down</button>
+  </div>
+
+  <!-- FLIPPER -->
+  <div class="button-group">
+    <h2 style="width:100%;">Flipper</h2>
+    <button onclick="callApiText('/api/flipper', 'Flipper')">Flipper</button>
+  </div>
+
+  <!-- SPINNERS -->
+  <div class="button-group">
+    <h2 style="width:100%;">Spinner 1</h2>
+    <button onclick="callApiText('/api/spinner1', 'Spinner 1')">Spinner 1</button>
+    <button onclick="callApiText('/api/spinner1r', 'Spinner 1')">Reverse</button>
+    <button onclick="callApiText('/api/spinner1off', 'Spinner 1')">Off</button>
+  </div>
+
+  <div class="button-group">
+    <h2 style="width:100%;">Spinner 2</h2>
+    <button onclick="callApiText('/api/spinner2', 'Spinner 2')">Spinner 2</button>
+    <button onclick="callApiText('/api/spinner2r', 'Spinner 2')">Reverse</button>
+    <button onclick="callApiText('/api/spinner2off', 'Spinner 2')">Off</button>
+  </div>
+
+  <div class="button-group">
+    <h2 style="width:100%;">Spinner 3</h2>
+    <button onclick="callApiText('/api/spinner3', 'Spinner 3')">Spinner 3</button>
+    <button onclick="callApiText('/api/spinner3r', 'Spinner 3')">Reverse</button>
+    <button onclick="callApiText('/api/spinner3off', 'Spinner 3')">Off</button>
+  </div>
+
+  <div class="button-group">
+    <h2 style="width:100%;">Global Spinner Control</h2>
+    <button onclick="callApiText('/api/spinners', 'All Spinners')">All Spinners</button>
+    <button onclick="callApiText('/api/spinnersr', 'All Spinners')">All Reverse</button>
+    <button onclick="callApiText('/api/spinnersoff', 'All Spinners')">All Off</button>
+  </div>
+
+  <!-- CRANE -->
+  <h1>Arena Crane Control</h1>
+  <p>Current Position: <span id="cranePosition" class="pos">Loading…</span></p>
+
+  <div class="control-container">
+    <!-- Left: Buttons -->
+    <div class="control-panel">
+
+      <div class="button-group">
+        <h2 style="width:100%;">Home & Reset</h2>
+        <button onclick="moveCraneHome()">Home Position</button>
+      </div>
+
+      <div class="button-group">
+        <h2 style="width:100%;">X-Axis Control</h2>
+        <button onclick="moveCrane('X10')">Move X +10</button>
+        <button onclick="moveCrane('X100')">Move X +100</button>
+        <button onclick="moveCrane('X-10')">Move X -10</button>
+        <button onclick="moveCrane('X-100')">Move X -100</button>
+      </div>
+
+      <div class="button-group">
+        <h2 style="width:100%;">Y-Axis Control</h2>
+        <button onclick="moveCrane('Y10')">Move Y +10</button>
+        <button onclick="moveCrane('Y100')">Move Y +100</button>
+        <button onclick="moveCrane('Y-10')">Move Y -10</button>
+        <button onclick="moveCrane('Y-100')">Move Y -100</button>
+      </div>
+
+      <!-- ? NEW: Z controls -->
+      <div class="button-group">
+        <h2 style="width:100%;">Z-Axis Control</h2>
+        <button onclick="moveCrane('Z10')">Move Z +10</button>
+        <button onclick="moveCrane('Z-10')">Move Z -10</button>
+      </div>
+
+      <div class="button-group">
+        <h2 style="width:100%;">Claw / Fire</h2>
+        <button onclick="craneFire()">Fire</button>
+        <button onclick="craneRelease()">Release</button>
+      </div>
+
+    </div>
+
+    <!-- Right: Joystick -->
+    <div class="visual-panel">
+      <div class="joystick-container">
+        <div id="craneJoystick"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const API_BASE = "http://192.168.0.102:3000";
+
+  const statusBox = document.getElementById('status');
+  const posEl     = document.getElementById('cranePosition');
+
+  function setStatus(msg, isError = false) {
+    statusBox.style.borderColor = isError ? '#e63946' : '#333';
+    statusBox.style.color       = isError ? '#e63946' : '#9ee493';
+    statusBox.textContent       = msg;
+  }
+
+  // Generic GET ? Text
+  async function callApiText(path, label = 'API') {
+    setStatus(`${label}: calling ${path} ...`);
+    try {
+      const res  = await fetch(`${API_BASE}${path}`);
+      const text = await res.text();
+      if (!res.ok) return setStatus(`${label} error ${res.status}: ${text}`, true);
+      setStatus(`${label}: ${text || 'OK'}`);
+    } catch (err) {
+      setStatus(`${label}: network error: ${err}`, true);
+    }
+  }
+
+  // Crane Position Polling
+  async function fetchPosition() {
+    try {
+      const res = await fetch(`${API_BASE}/api/crane/position`);
+      const data = await res.json();
+      if (!res.ok) return setStatus(`Crane position error ${res.status}: ${data.error}`, true);
+      const x = Number(data.x || 0).toFixed(2);
+      const y = Number(data.y || 0).toFixed(2);
+      const z = Number(data.z || 0).toFixed(2);
+      posEl.textContent = `X: ${x}, Y: ${y}, Z: ${z}`;
+    } catch (err) {
+      setStatus(`Crane position fetch failed: ${err}`, true);
+    }
+  }
+  setInterval(fetchPosition, 1000);
+  fetchPosition();
+
+  // Crane Actions
+  async function moveCraneHome() {
+    setStatus("Crane: homing...");
+    try {
+      const res = await fetch(`${API_BASE}/api/crane/home`, { method: "POST" });
+      const text = await res.text();
+      if (!res.ok) return setStatus(`Crane error ${res.status}: ${text}`, true);
+      setStatus(text);
+      fetchPosition();
+    } catch (err) {
+      setStatus("Crane: network error: " + err, true);
+    }
+  }
+
+  async function moveCrane(command) {
+    setStatus(`Crane: moving ${command}...`);
+    try {
+      const res = await fetch(`${API_BASE}/api/crane/move`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command })
+      });
+      const text = await res.text();
+      if (!res.ok) return setStatus(`Crane error ${res.status}: ${text}`, true);
+      setStatus(text);
+      fetchPosition();
+    } catch (err) {
+      setStatus("Crane: network error: " + err, true);
+    }
+  }
+
+  async function craneFire() {
+    setStatus("Crane: FIRE ...");
+    try {
+      const res = await fetch(`${API_BASE}/api/crane/fire`, { method: "POST" });
+      const text = await res.text();
+      if (!res.ok) return setStatus(`Crane FIRE error ${res.status}: ${text}`, true);
+      setStatus(text);
+      fetchPosition();
+    } catch (err) {
+      setStatus("Crane FIRE: network error: " + err, true);
+    }
+  }
+
+  async function craneRelease() {
+    setStatus("Crane: RELEASE ...");
+    try {
+      const res = await fetch(`${API_BASE}/api/crane/release`, { method: "POST" });
+      const text = await res.text();
+      if (!res.ok) return setStatus(`Crane RELEASE error ${res.status}: ${text}`, true);
+      setStatus(text);
+      fetchPosition();
+    } catch (err) {
+      setStatus("Crane RELEASE: network error: " + err, true);
+    }
+  }
+
+  // Joystick
+  (function joystick() {
+    const js  = document.getElementById('craneJoystick');
+    const box = js.parentElement;
+    let dragging = false;
+    let lastSent = 0;
+    const THROTTLE = 150;
+
+    function center() { js.style.transform = 'translate(-50%, -50%)'; }
+
+    box.addEventListener('mousedown', () => dragging = true);
+    window.addEventListener('mouseup', () => { dragging = false; center(); });
+    box.addEventListener('mouseleave', () => { dragging = false; center(); });
+
+    box.addEventListener('mousemove', async (e) => {
+      if (!dragging) return;
+
+      const rect = box.getBoundingClientRect();
+      const cx = rect.left + rect.width/2;
+      const cy = rect.top + rect.height/2;
+      const dx = Math.max(-50, Math.min(50, e.clientX - cx));
+      const dy = Math.max(-50, Math.min(50, e.clientY - cy));
+
+      js.style.transform = `translate(${dx - 25}px, ${dy - 25}px)`;
+
+      const now = Date.now();
+      if (now - lastSent < THROTTLE) return;
+      lastSent = now;
+
+      const cmd =
+        Math.abs(dx) > Math.abs(dy)
+          ? (dx > 0 ? 'X10' : 'X-10')
+          : (dy > 0 ? 'Y10' : 'Y-10');
+
+      try {
+        await fetch(`${API_BASE}/api/crane/move`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ command: cmd })
+        });
+      } catch {}
+    });
+  })();
+</script>
+
+</body>
+</html>

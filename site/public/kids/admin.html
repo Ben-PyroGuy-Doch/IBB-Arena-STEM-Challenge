@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>IBB Arena - Referee</title>
+  <link rel="stylesheet" href="kids.css">
+  <style>
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 12px; }
+    h2 { color: #f1c40f; margin: 22px 0 8px; font-size: 20px; letter-spacing: 1px; }
+    .big { padding: 22px 10px; font-size: 26px; font-weight: 900; border: 0; border-radius: 14px; color: #fff; margin: 6px 1%; }
+    .stop  { width: 98%; background: #c0392b; font-size: 36px; padding: 30px; box-shadow: 0 0 20px rgba(231,76,60,.6); }
+    .half  { width: 48%; }
+    .armed    { background: #1e8449; }
+    .disarmed { background: #555; }
+    .on  { background: #1e8449; }
+    .offb { background: #7d6608; }
+    .btn { padding: 12px 16px; margin: 4px; font-size: 17px; font-weight: 700; color: #fff; background: #333;
+      border: 2px solid #555; border-radius: 10px; }
+    .btn.red { background: #922b21; border-color: #e74c3c; }
+    .btn.go  { background: #1e5631; border-color: #2ecc71; }
+    table { width: 100%; border-collapse: collapse; }
+    td, th { padding: 8px 6px; border-bottom: 1px solid #333; text-align: left; font-size: 17px; }
+    th { color: #aaa; font-weight: 600; }
+    .teamcard { width: 48%; margin: 1%; border-radius: 14px; padding: 12px; text-align: center; }
+    .teamcard .pts { font-size: 60px; font-weight: 900; }
+    .teamcard input { font-size: 18px; padding: 6px; width: 60%; border-radius: 6px; border: 0; }
+    .log { background: #111; border: 1px solid #333; border-radius: 10px; padding: 10px; font-family: Menlo, Consolas, monospace;
+      font-size: 14px; max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    #login input { font-size: 30px; padding: 12px; width: 240px; text-align: center; border-radius: 10px; border: 3px solid #e63946;
+      background: #1a1a1a; color: #fff; }
+    .clockbox { background: #111; border: 2px solid #333; border-radius: 14px; padding: 12px; margin: 10px 1% 0; text-align: center; }
+    .clockbox .time { font-size: 84px; font-weight: 900; font-family: Menlo, Consolas, monospace; line-height: 1.1; }
+    .clockbox .time.low { color: #e74c3c; }
+    .clockbox .time.over { color: #f1c40f; font-family: inherit; font-size: 60px; }
+    .third { width: 31.3%; }
+    .start { background: #1e8449; } .pause { background: #b9770e; } .rst { background: #444; }
+    .len { font-size: 18px; padding: 10px 18px; }
+    .len.sel { border-color: #f1c40f; color: #f1c40f; }
+    .pitbtn { width: 48%; }
+    .pitbtn small { display: block; font-size: 17px; font-weight: 600; margin-top: 4px; opacity: .9; }
+    .botteam { font-size: 20px; font-weight: 800; padding: 8px; border-radius: 10px 10px 0 0; text-align: center; }
+    .botrow { background: #1c1c1c; padding: 8px; border-bottom: 1px solid #333; text-align: center; }
+    .botrow .big { width: 96%; margin: 6px 2%; padding: 16px 6px; }
+    .botrow .done { background: #333 !important; border: 3px dashed #888; }
+    .botname { font-size: 18px; font-weight: 700; display: block; }
+    .undo { display: block; margin: 0 auto; }
+    .stand td.tot { font-size: 24px; font-weight: 900; color: #f1c40f; }
+    .err { color: #e74c3c; font-weight: 700; min-height: 24px; margin: 10px; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <img src="../assets/ibb-logo.png" alt="IBB">
+    <div class="title">REFEREE</div>
+    <button class="btn hidden" id="logout" onclick="logout()">Log out</button>
+  </div>
+
+  <div id="login" class="wrap" style="text-align:center; padding-top:40px;">
+    <h2>Referee PIN</h2>
+    <input type="password" id="pin" inputmode="numeric" pattern="[0-9]*" autocomplete="off"><br>
+    <button class="big armed" style="width:240px;" onclick="login()">Unlock</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+
+  <div id="panel" class="wrap hidden">
+    <div class="err" id="err"></div>
+
+    <button class="big stop" onclick="allStop()">&#9632; ALL STOP</button>
+    <div class="row">
+      <button class="big half disarmed" id="armBtn" onclick="toggleArm()">...</button>
+      <button class="big half on" id="gameBtn" onclick="toggleGame()">...</button>
+    </div>
+
+    <h2>ROUND CLOCK</h2>
+    <div class="clockbox">
+      <div class="time" id="clockTime">2:00</div>
+      <div class="row">
+        <button class="big third start" onclick="clockDo('start')">&#9654; START</button>
+        <button class="big third pause" onclick="clockDo('stop')">&#10074;&#10074; STOP</button>
+        <button class="big third rst" onclick="clockDo('reset')">&#8635; RESET</button>
+      </div>
+      <div id="lens" style="margin-top:6px;"></div>
+    </div>
+
+    <h2>BOT FIGHT</h2>
+    <div class="row" id="bots"></div>
+
+    <h2>STANDINGS</h2>
+    <table class="stand">
+      <thead><tr><th>Team</th><th>STEM</th><th>Bots in</th><th>Bot time</th><th>Pit bonus</th><th>Bot pts</th><th>Fights won</th><th>TOTAL</th></tr></thead>
+      <tbody id="standings"></tbody>
+    </table>
+
+    <h2>SCORES <small style="color:#888;font-weight:400;">&plusmn; buttons adjust STEM points</small></h2>
+    <div class="row" id="teams"></div>
+
+    <h2>RESETS</h2>
+    <button class="btn" onclick="reset('locks')">Clear cooldowns &amp; locks</button>
+    <button class="btn" onclick="reset('scores')">Scores to 0</button>
+    <button class="btn red" onclick="reset('all')">New round (everything)</button>
+
+    <h2>WEAPONS</h2>
+    <table>
+      <thead><tr><th></th><th>Weapon</th><th>Pts</th><th>Status</th><th>Kids can use</th><th>Referee fire</th></tr></thead>
+      <tbody id="weapons"></tbody>
+    </table>
+
+    <h2>MANUAL</h2>
+    <button class="btn" onclick="pi('/pitup')">Pit up</button>
+    <button class="btn" onclick="pi('/pitdown')">Pit down</button>
+    <button class="btn" onclick="pi('/spinner1off')">Spinner 1 off</button>
+    <button class="btn" onclick="pi('/spinner2off')">Spinner 2 off</button>
+    <button class="btn" onclick="pi('/spinner3off')">Spinner 3 off</button>
+
+    <h2>ACTIVITY</h2>
+    <div class="log" id="log"></div>
+  </div>
+
+<script src="kids-common.js"></script>
+<script>
+  var $ = KIDS.$;
+  var token = KIDS.store('kidsAdmin');
+  var S = null;
+  var editing = false;  // don't redraw team names while someone is typing
+
+  function hdr() { return { 'X-Admin-Token': token || '' }; }
+
+  function login() {
+    KIDS.post('/api/kids/admin/login', { pin: $('pin').value }, null, function (err, r) {
+      if (err) { $('loginErr').innerHTML = KIDS.esc(err.error); return; }
+      token = r.token;
+      KIDS.store('kidsAdmin', token);
+      $('pin').value = '';
+      start();
+    });
+  }
+  $('pin').onkeydown = function (e) { if (e.keyCode === 13) login(); };
+
+  function logout() {
+    token = null;
+    KIDS.store('kidsAdmin', null);
+    $('panel').className = 'wrap hidden';
+    $('logout').className = 'btn hidden';
+    $('login').className = 'wrap';
+  }
+
+  function start() {
+    $('login').className = 'wrap hidden';
+    $('panel').className = 'wrap';
+    $('logout').className = 'btn';
+    poll();
+  }
+
+  // Every admin action goes through here; a lost login drops back to the PIN screen.
+  function act(path, body) {
+    KIDS.post('/api/kids/admin/' + path, body || {}, hdr(), function (err) {
+      if (err && err.status === 401) return logout();
+      $('err').innerHTML = err ? KIDS.esc(err.error) : '';
+      refresh();
+    });
+  }
+
+  function allStop() { act('stop'); }
+  function toggleArm() {
+    if (!S) return;
+    if (!S.armed && !confirm('ARM the arena? Correct answers will move real hardware.')) return;
+    act('arm', { armed: !S.armed });
+  }
+  function toggleGame() { if (S) act('game', { on: !S.gameOn }); }
+  function reset(scope) {
+    var msg = { locks: 'Clear all cooldowns and locks?', scores: 'Set both scores to 0?', all: 'Start a NEW ROUND? Scores, locks and question history all reset.' }[scope];
+    if (confirm(msg)) act('reset', { scope: scope });
+  }
+  function pit(bot, undo) {
+    if (undo && !confirm('Undo - put this bot back in?')) return;
+    act('pit', { bot: bot, undo: undo });
+  }
+  function renameBot(bot) {
+    var n = prompt('Bot name?');
+    if (n) act('botname', { bot: bot, name: n });
+  }
+  function score(team, d) { act('score', { team: team, delta: d }); }
+  function rename(team) {
+    var v = $('name-' + team).value;
+    editing = false;
+    if (v) act('name', { team: team, name: v });
+  }
+  function clockDo(action, secs) {
+    if (action === 'reset' && S && S.timer.running && !confirm('Reset the clock while the round is running?')) return;
+    act('timer', { action: action, secs: secs });
+  }
+  function fmt(secs) {
+    var m = Math.floor(secs / 60), x = secs % 60;
+    return m + ':' + (x < 10 ? '0' : '') + x;
+  }
+  var LENGTHS = [60, 90, 120, 180, 300];
+
+  function setWeapon(id, on) { act('weapon', { weapon: id, enabled: on }); }
+  function fire(id) { if (confirm('Fire ' + id + ' now?')) act('fire', { weapon: id }); }
+  function pi(p) { act('pi', { path: p }); }
+
+  function render(s) {
+    S = s;
+    var a = $('armBtn');
+    a.className = 'big half ' + (s.armed ? 'armed' : 'disarmed');
+    a.innerHTML = s.armed ? '&#9888; ARMED - tap to disarm' : 'SAFE - tap to ARM';
+    var g = $('gameBtn');
+    g.className = 'big half ' + (s.gameOn ? 'on' : 'offb');
+    g.innerHTML = s.gameOn ? 'Game ON - tap to pause' : 'PAUSED - tap to start';
+
+    var t = s.timer, ct = $('clockTime');
+    ct.className = 'time' + (t.over ? ' over' : (t.running && t.left <= 10 ? ' low' : ''));
+    ct.innerHTML = t.over ? (t.reason === 'ko' ? 'KNOCKOUT' : "TIME'S UP") : fmt(t.left) + (t.running ? '' : ' <small style="font-size:24px;color:#888;">stopped</small>');
+    var ln = 'Round length: ';
+    for (var n = 0; n < LENGTHS.length; n++) {
+      ln += '<button class="btn len' + (LENGTHS[n] === t.duration ? ' sel' : '') + '" onclick="clockDo(\'reset\',' + LENGTHS[n] + ')">' + fmt(LENGTHS[n]) + '</button>';
+    }
+    $('lens').innerHTML = ln;
+
+    var bh = '', sh = '';
+    for (var q = 0; q < s.scores.length; q++) {
+      var z = s.scores[q];
+      bh += '<div class="pitbtn" style="margin:6px 1%;"><div class="botteam team-' + z.id + '">' + KIDS.esc(z.name) +
+            ' &middot; ' + z.botsIn + ' of ' + z.bots.length + ' in</div>';
+      for (var r = 0; r < z.bots.length; r++) {
+        var bt = z.bots[r];
+        var nm = '<span class="botname" onclick="renameBot(\'' + bt.id + '\')">' + KIDS.esc(bt.name) + ' &#9998;</span>';
+        if (bt.pitted !== null) {
+          bh += '<div class="botrow">' + nm + '<button class="big team-' + z.id + ' done" disabled>PITTED<small>at ' + fmt(bt.pitted) + '</small></button>' +
+                (t.over ? '' : '<button class="btn undo" onclick="pit(\'' + bt.id + '\',true)">Undo</button>') + '</div>';
+        } else {
+          bh += '<div class="botrow">' + nm + '<button class="big team-' + z.id + '" onclick="pit(\'' + bt.id + '\',false)">PITTED<small>in for ' +
+                fmt(bt.survived) + '</small></button></div>';
+        }
+      }
+      bh += '</div>';
+      sh += '<tr><td><b>' + KIDS.esc(z.name) + '</b></td><td>' + z.stem + '</td><td>' + z.botsIn + '</td><td>' + fmt(z.survived) + '</td><td>' +
+            (z.pitBonus ? '+' + z.pitBonus : '-') + '</td><td>' + z.bot + '</td><td>' + z.wins + '</td><td class="tot">' + z.score + '</td></tr>';
+    }
+    $('bots').innerHTML = bh;
+    $('standings').innerHTML = sh;
+
+    if (!editing) {
+      var t = '';
+      for (var i = 0; i < s.scores.length; i++) {
+        var x = s.scores[i];
+        t += '<div class="teamcard team-' + x.id + '">' +
+             '<input id="name-' + x.id + '" value="' + KIDS.esc(x.name) + '" onfocus="editing=true" onblur="rename(\'' + x.id + '\')">' +
+             '<div class="pts">' + x.score + '</div>' +
+             '<div style="margin-bottom:6px;">STEM ' + x.stem + ' &middot; Bot ' + x.bot + '</div>' +
+             '<button class="btn" onclick="score(\'' + x.id + '\',-10)">-10</button>' +
+             '<button class="btn" onclick="score(\'' + x.id + '\',-5)">-5</button>' +
+             '<button class="btn" onclick="score(\'' + x.id + '\',5)">+5</button>' +
+             '<button class="btn" onclick="score(\'' + x.id + '\',10)">+10</button>' +
+             (s.pending[x.id] ? '<div style="margin-top:6px;">answering: ' + KIDS.esc(s.pending[x.id]) + '</div>' : '') +
+             '</div>';
+      }
+      $('teams').innerHTML = t;
+    }
+
+    var w = '';
+    for (var j = 0; j < s.weapons.length; j++) {
+      var y = s.weapons[j];
+      w += '<tr><td style="font-size:26px;">' + y.icon + '</td><td><b>' + KIDS.esc(y.label) + '</b><br><small>' + KIDS.esc(y.topic) + '</small></td>' +
+           '<td>' + y.points + '</td><td>' + (y.busy ? 'cooldown ' + y.busy + 's' : 'ready') + '</td>' +
+           '<td><button class="btn ' + (y.enabled ? 'go' : '') + '" onclick="setWeapon(\'' + y.id + '\',' + !y.enabled + ')">' +
+             (y.enabled ? 'ON' : 'OFF') + '</button></td>' +
+           '<td><button class="btn red" onclick="fire(\'' + y.id + '\')">Fire</button></td></tr>';
+    }
+    $('weapons').innerHTML = w;
+
+    var l = '';
+    for (var k = 0; k < s.log.length; k++) {
+      var d = new Date(s.log[k].t);
+      var hh = ('0' + d.getHours()).slice(-2), mm = ('0' + d.getMinutes()).slice(-2), ss = ('0' + d.getSeconds()).slice(-2);
+      l += hh + ':' + mm + ':' + ss + '  ' + KIDS.esc(s.log[k].msg) + '<br>';
+    }
+    $('log').innerHTML = l;
+  }
+
+  var pollTimer = null;
+  function refresh() {
+    KIDS.get('/api/kids/admin/state', hdr(), function (err, s) {
+      if (err && err.status === 401) return logout();
+      if (err) { $('err').innerHTML = KIDS.esc(err.error); return; }
+      render(s);
+    });
+  }
+  function poll() {
+    clearTimeout(pollTimer);
+    if (!token) return;
+    refresh();
+    pollTimer = setTimeout(poll, 1000);
+  }
+
+  if (token) start();
+</script>
+</body>
+</html>

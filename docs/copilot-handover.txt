@@ -1,0 +1,512 @@
+Perfect idea. Below is a project handover/context file you can paste into another Copilot/ChatGPT conversation so it immediately understands the architecture, current state, and what has already been built.
+
+Save as:
+
+ARENA_PROJECT_CONTEXT.md
+
+Arena Control System - Project Context
+Overview
+
+This project is an arena control system for a combat robotics / BattleBot style arena.
+
+The system consists of:
+
+Front End
+Static HTML pages hosted on IIS
+Authentication via PIN login
+Role-based access control using sessionStorage token
+Back End
+Node.js Express API (server.js)
+Running on Windows Server 2012
+LAN IP:
+192.168.0.102
+
+
+API:
+
+http://192.168.0.102:3000
+
+Arena Hardware Controller
+
+Raspberry Pi:
+
+192.168.80.100:8000
+
+
+Controls:
+
+Pit
+Flipper
+Spinner 1
+Spinner 2
+Spinner 3
+Global spinner control
+Crane Controller
+
+Klipper + Moonraker
+
+192.168.80.101:7125
+
+
+Used to control:
+
+X axis
+Y axis
+Z axis
+Solenoid claw
+Authentication
+
+Current fixed PIN structure:
+
+var pinToPageMap = {
+  '<PIN>': { page: 'arena_Root.html',     role: 'root' },
+  '<PIN>': { page: 'arena_Flipper.html',  role: 'flipper' },
+  '<PIN>': { page: 'arena_Pit.html',      role: 'pit' },
+  '<PIN>': { page: 'arena_Spinners.html', role: 'spinners' },
+  '<PIN>': { page: 'arena_Crane.html',    role: 'crane' }
+};
+
+
+Login API:
+
+POST /api/verify-pin
+
+
+Returns:
+
+{
+  "success": true,
+  "page": "arena_Root.html",
+  "token": "<base64 token>"
+}
+
+
+Token stored as:
+
+sessionStorage.setItem("arenaToken", token);
+
+Roles
+root
+
+Access:
+
+arena_Root.html
+
+
+Controls:
+
+Pit
+Flipper
+Spinners 1/2/3
+Global spinner controls
+Full crane controls
+crane
+
+Access:
+
+arena_Crane.html
+
+
+Controls:
+
+Crane only
+pit
+
+Access:
+
+arena_Pit.html
+
+
+Controls:
+
+Pit only
+flipper
+
+Access:
+
+arena_Flipper.html
+
+
+Controls:
+
+Flipper only
+spinners
+
+Access:
+
+arena_Spinners.html
+
+
+Controls:
+
+Spinner controls only
+Crane Architecture
+
+Klipper controlled through Moonraker.
+
+Moonraker API:
+
+http://192.168.80.101:7125
+
+
+Node server proxies all commands.
+
+Frontend NEVER talks directly to Moonraker.
+
+Flow:
+
+Web Page
+    ↓
+Node API
+    ↓
+Moonraker
+    ↓
+Klipper
+    ↓
+Crane
+
+Crane Commands
+Home
+
+Endpoint:
+
+POST /api/crane/home
+
+
+Executes:
+
+G28
+
+
+A special version of the route exists because Moonraker occasionally returns odd responses after homing.
+
+Route is tolerant and treats most responses as success.
+
+Move
+
+Endpoint:
+
+POST /api/crane/move
+
+
+Body:
+
+{
+  "command":"X10"
+}
+
+
+Supported:
+
+X10
+X-10
+X100
+X-100
+
+Y10
+Y-10
+Y100
+Y-100
+
+Z10
+Z-10
+
+
+Executed as:
+
+G91
+G1 X10 F5000
+G90
+
+
+(or equivalent)
+
+Fire
+
+Endpoint:
+
+POST /api/crane/fire
+
+
+Current behaviour:
+
+G90
+G1 Z17 F3000
+M106 S255
+
+
+Purpose:
+
+Move crane Z to 17
+Turn solenoid ON
+Release
+
+Endpoint:
+
+POST /api/crane/release
+
+
+Current behaviour:
+
+M106 S0
+G90
+G1 Z250 F6000
+
+
+Purpose:
+
+Turn solenoid OFF
+Raise crane to Z250
+
+No homing occurs.
+
+Crane Position Polling
+
+Endpoint:
+
+GET /api/crane/position
+
+
+Moonraker source:
+
+/printer/objects/query?toolhead
+
+
+Returns:
+
+{
+  "x":123,
+  "y":456,
+  "z":250
+}
+
+
+Front-end polls every second.
+
+Root Page Features
+
+Current root page contains:
+
+Pit
+Pit Up
+Pit Down
+
+Flipper
+Flipper
+
+Spinners
+Spinner 1
+Reverse
+Off
+
+Spinner 2
+Reverse
+Off
+
+Spinner 3
+Reverse
+Off
+
+All Spinners
+All Reverse
+All Off
+
+Crane
+Home
+Home Position
+
+X Axis
+Move X +10
+Move X +100
+Move X -10
+Move X -100
+
+Y Axis
+Move Y +10
+Move Y +100
+Move Y -10
+Move Y -100
+
+Z Axis
+Move Z +10
+Move Z -10
+
+Claw
+Fire
+Release
+
+Crane Page Features
+
+Current crane page contains:
+
+Position display
+X:
+Y:
+Z:
+
+
+Polled once per second.
+
+Home
+Home
+
+X controls
+X +10
+X +100
+X -10
+X -100
+
+Y controls
+Y +10
+Y +100
+Y -10
+Y -100
+
+Z controls
+Z +10
+Z -10
+
+Claw
+Fire
+Release
+
+Joystick
+
+Supports:
+
+X +10
+X -10
+Y +10
+Y -10
+
+
+Sent every:
+
+150ms
+
+
+while dragging.
+
+Klipper Configuration Notes
+
+Current Z configuration:
+
+[stepper_z]
+step_pin: PB5
+dir_pin: !PB6
+enable_pin: !PC3
+microsteps: 16
+rotation_distance: 8
+endstop_pin: ^PA7
+position_endstop: 363
+position_max: 363
+position_min: -10
+
+
+Do NOT modify:
+
+rotation_distance
+
+
+to increase speed.
+
+Speed should instead be controlled through:
+
+max_z_velocity
+max_z_accel
+
+
+and G-code feedrates.
+
+Stepper Holding
+
+Problem:
+
+Klipper forgets position when motors disable.
+
+Recommended solution:
+
+[idle_timeout]
+timeout: 86400
+
+
+Optional:
+
+hold_current
+
+
+if using TMC drivers.
+
+Avoid:
+
+M84
+
+
+which disables motors.
+
+Current Known Issues
+1
+
+Moonraker sometimes returns unusual responses after:
+
+G28
+
+
+Result:
+
+Frontend may show:
+
+500 Could not home crane
+
+
+even though homing actually worked.
+
+Use the tolerant home route.
+
+2
+
+Windows Server 2012 may shut down automatically if activation/evaluation period has expired.
+
+Check:
+
+slmgr /dli
+
+
+and restore proper activation.
+
+Current Status
+
+System functioning:
+
+✅ IIS front-end
+
+✅ PIN login
+
+✅ Root page
+
+✅ Crane page
+
+✅ Pit controls
+
+✅ Flipper controls
+
+✅ Spinner controls
+
+✅ X/Y/Z crane movement
+
+✅ Fire command
+
+✅ Release command
+
+✅ Position polling
+
+✅ Joystick movement
+
+✅ Moonraker integration
+
+✅ Klipper integration
+
+This is the current known-good state of the project.
+
+
+This markdown should give another conversation enough context to continue development without having to rediscover the architecture or re-explain previous decisions.

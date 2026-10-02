@@ -1,0 +1,19 @@
+IBB Arena Control + Earn to Fire
+Copyright (c) 2026 Ben Docherty and InfoSec Battle Bots
+https://github.com/Ben-PyroGuy-Doch/ibb-arena
+
+CODE - Apache License 2.0 (see LICENSE)
+  site/ (except the question text below), deploy.sh, .github/
+
+DOCUMENTATION AND TEACHING MATERIAL - CC BY 4.0 (see LICENSE-docs)
+  README.md, DEPLOY.md, docs/, and the STEM questions and explanations in
+  site/server/kids-questions.js
+
+If you reuse or adapt any of this, keep this NOTICE file (Apache 2.0, section 4d)
+or credit it like this (CC BY 4.0):
+
+    "Based on IBB Arena Control + Earn to Fire by Ben Docherty and InfoSec Battle Bots (https://github.com/Ben-PyroGuy-Doch/ibb-arena)"
+
+TRADEMARKS
+  The InfoSec Battle Bots name and logo (site/public/assets/ibb-logo.png) are
+  not licensed under either licence and may not be reused without permission.

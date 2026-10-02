@@ -1,0 +1,18 @@
+# Secrets and runtime state - these live only on the arena server
+site/server/pins.json
+site/server/kids-config.json
+site/server/kids-state.json
+
+# Snapshot of the box as first found (contains live PINs inline)
+original-*/
+
+# Node
+node_modules/
+site/server/daemon/
+*.log
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.claude/

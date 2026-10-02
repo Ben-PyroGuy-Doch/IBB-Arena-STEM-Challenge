@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>IBB Arena Spinner Control</title>
+
+    <style>
+      body {
+        background-color: #0f0f0f;
+        color: #f5f5f5;
+        font-family: 'Segoe UI', sans-serif;
+        text-align: center;
+        padding: 2em;
+      }
+      h1 {
+        color: #f1c40f;
+        text-shadow: 1px 1px 4px #000;
+        margin-bottom: 30px;
+      }
+      h2 { color: #f1c40f; }
+
+      button {
+        background-color: #e63946;
+        color: #f5f5f5;
+        font-size: 1.1em;
+        padding: 12px 24px;
+        margin: 8px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(230, 57, 70, 0.6);
+        transition: all 0.2s ease-in-out;
+      }
+      button:hover {
+        background-color: #f1c40f;
+        color: #0f0f0f;
+        box-shadow: 0 0 15px #f1c40f;
+      }
+
+      .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .status {
+        margin: 12px auto;
+        max-width: 900px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        text-align: left;
+        font-family: Consolas, Menlo, monospace;
+        background: #1a1a1a;
+        border: 1px solid #333;
+        white-space: pre-wrap;
+        min-height: 48px;
+      }
+    </style>
+
+    <!-- Role Gate -->
+    <script>
+      (function gate() {
+        const token = sessionStorage.getItem('arenaToken');
+        if (!token) location.href = 'index.html';
+        try {
+          const decoded = JSON.parse(atob(token));
+          const expectedRole = 'spinners';
+          if (decoded.role !== expectedRole) location.href = 'index.html';
+        } catch {
+          location.href = 'index.html';
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    assets/ibb-logo.png
+
+    <h1>Spinner Dashboard</h1>
+
+    <div id="status" class="status"></div>
+
+    <!-- Spinner 1 -->
+    <div class="button-group">
+      <h2 style="width:100%;">Spinner 1</h2>
+      <button onclick="Spinner1()">Spinner 1</button>
+      <button onclick="Spinner1R()">Reverse</button>
+      <button onclick="Spinner1Off()">Off</button>
+    </div>
+
+    <!-- Spinner 2 -->
+    <div class="button-group">
+      <h2 style="width:100%;">Spinner 2</h2>
+      <button onclick="Spinner2()">Spinner 2</button>
+      <button onclick="Spinner2R()">Reverse</button>
+      <button onclick="Spinner2Off()">Off</button>
+    </div>
+
+    <!-- Spinner 3 -->
+    <div class="button-group">
+      <h2 style="width:100%;">Spinner 3</h2>
+      <button onclick="Spinner3()">Spinner 3</button>
+      <button onclick="Spinner3R()">Reverse</button>
+      <button onclick="Spinner3Off()">Off</button>
+    </div>
+
+    <!-- Global -->
+    <div class="button-group">
+      <h2 style="width:100%;">Global Spinner Control</h2>
+      <button onclick="Spinners()">All Spinners</button>
+      <button onclick="SpinnersR()">All Reverse</button>
+      <button onclick="SpinnersOff()">All Off</button>
+    </div>
+
+    <script>
+      // ---------- CONFIG ----------
+      const API_BASE = "http://192.168.0.102:3000";
+
+      const statusBox = document.getElementById('status');
+
+      function setStatus(msg, isError = false) {
+        statusBox.style.borderColor = isError ? '#e63946' : '#333';
+        statusBox.style.color = isError ? '#e63946' : '#9ee493';
+        statusBox.textContent = msg;
+      }
+
+      async function callApi(path) {
+        setStatus("Calling " + path + " ...");
+        try {
+          const res = await fetch(API_BASE + path);
+          const text = await res.text();
+
+          if (!res.ok) {
+            setStatus(`Error ${res.status}: ${text}`, true);
+            return;
+          }
+          setStatus(text || "OK");
+        } catch (err) {
+          console.error(err);
+          setStatus("Network error: " + err, true);
+        }
+      }
+
+      // ---- Spinner 1 ----
+      function Spinner1()    { callApi("/api/spinner1"); }
+      function Spinner1R()   { callApi("/api/spinner1r"); }
+      function Spinner1Off() { callApi("/api/spinner1off"); }
+
+      // ---- Spinner 2 ----
+      function Spinner2()    { callApi("/api/spinner2"); }
+      function Spinner2R()   { callApi("/api/spinner2r"); }
+      function Spinner2Off() { callApi("/api/spinner2off"); }
+
+      // ---- Spinner 3 ----
+      function Spinner3()    { callApi("/api/spinner3"); }
+      function Spinner3R()   { callApi("/api/spinner3r"); }
+      function Spinner3Off() { callApi("/api/spinner3off"); }
+
+      // ---- Global ----
+      function Spinners()    { callApi("/api/spinners"); }
+      function SpinnersR()   { callApi("/api/spinnersr"); }
+      function SpinnersOff() { callApi("/api/spinnersoff"); }
+    </script>
+  </body>
+</html>
