@@ -19,7 +19,7 @@
 
   .head { display: flex; align-items: center; gap: 5mm; padding-bottom: 3mm; border-bottom: 1.2mm solid #000; margin-bottom: 5mm; }
   .head img { height: 19mm; filter: grayscale(1) contrast(1.2); }
-  .head .t { font-size: 12.5pt; font-weight: 700; line-height: 1.25; }
+  .head .t { font-size: 12.5pt; font-weight: 700; line-height: 1.25; white-space: nowrap; }
   .head .t b { font-size: 17pt; font-weight: 900; letter-spacing: .5pt; }
   h1 { font-size: 46pt; margin: 0; line-height: 1; font-weight: 900; letter-spacing: 1pt; }
   h2 { font-size: 17pt; margin: 5mm 0 2mm; font-weight: 900; }
@@ -53,7 +53,7 @@
   .tick { display: inline-block; width: 5mm; height: 5mm; border: 0.5mm solid #000; border-radius: 1mm; margin-right: 2.5mm; vertical-align: -1mm; }
   .chk li { list-style: none; margin-left: -6mm; }
   .warn { border: 1.2mm solid #000; border-radius: 3mm; padding: 3.5mm 5mm; }
-  .lb th, .lb td { border: 0.3mm solid #000; height: 8.6mm; padding: 1mm 2mm; font-size: 10pt; }
+  .lb th, .lb td { border: 0.3mm solid #000; height: 8.9mm; padding: 1mm 2mm; font-size: 10pt; }
   .lb th { height: auto; background: #eee; }
   code { font-family: Consolas, monospace; border: 0.3mm solid #999; padding: 0.2mm 1.4mm; border-radius: 1mm; font-size: 10pt; }
 
@@ -67,6 +67,16 @@
   .say b { font-weight: 900; }
   .cue { font-size: 10pt; text-transform: uppercase; letter-spacing: 1pt; font-weight: 800; color: #444; margin: 0 0 1mm; }
   .slot td { font-size: 10.5pt; }
+  .steps { display: flex; gap: 2mm; }
+  .step { flex: 1; border: 0.4mm solid #000; border-radius: 2.5mm; padding: 2.5mm 2.5mm 3mm; font-size: 9.5pt; line-height: 1.3; }
+  .step .when { font-size: 15pt; font-weight: 900; border-bottom: 0.3mm solid #000; margin-bottom: 1.5mm; padding-bottom: 1mm; }
+  .step b { font-size: 11pt; }
+  .ref .warn ul { padding-left: 5mm; }
+  .ref .chk li { margin-bottom: 2.2mm; }
+  .dayfield { margin-left: auto; font-size: 13pt; font-weight: 800; white-space: nowrap; }
+  .dayfield span { display: inline-block; width: 32mm; border-bottom: 0.4mm solid #000; margin: 0 4mm 0 2mm; height: 6mm; }
+  .dayfield span.short { width: 14mm; margin-right: 0; }
+  .box .fill { height: 9mm; }
   .tk h2 { font-size: 15pt; margin: 3.5mm 0 1.5mm; }
   .tk td { padding: 1.4mm 2.5mm; font-size: 10.5pt; }
   .tk p, .tk li { font-size: 11pt; margin-bottom: 1.4mm; }
@@ -86,7 +96,7 @@
     <div class="t">STEMfest Newcastle<br>Tuesday 6 &ndash; Thursday 8 October 2026</div>
   </div>
   <h1>EARN TO FIRE</h1>
-  <p style="font-size:18pt; font-weight:700; margin:3mm 0 6mm;">Answer STEM questions. Fire the arena. Battle the bots.</p>
+  <p style="font-size:18pt; font-weight:700; margin:3mm 0 4mm;">Answer STEM questions. Fire the arena. Battle the bots.</p>
 
   <div class="cols">
     <div class="box thick"><div class="icon">&#129504;</div><h3>Think</h3>
@@ -108,14 +118,15 @@
     <tr><td>&#128371;&#65039; <b>Circuits &amp; electricity</b>: volts, amps, Ohm's law</td><td>&#129302; <b>Sensors &amp; robot brains</b>: how robots sense the world</td></tr>
     <tr><td>&#9881;&#65039; <b>Gears &amp; motion</b>: speed, RPM, gear ratios</td><td>&#127786;&#65039; <b>Boss challenge</b>: energy, momentum and more</td></tr>
   </table>
-  <p style="margin-top:3mm;">Got one wrong? The iPad explains the right answer, so you learn something either way.</p>
+  <p style="margin-top:2mm;">Got one wrong? The iPad explains the right answer, so you learn something either way.</p>
 
   <h2>How does the arena work?</h2>
   <p>Each iPad talks over WiFi to a small server. The server sends the command to a
-  <b>Raspberry Pi</b>, a credit-card-sized computer, which switches the motors and the
-  pneumatics. <b>Look through the clear front of the arena base to see the tech!</b></p>
+  <b>Raspberry Pi</b>, a credit-card-sized computer, which switches the arena's motors,
+  solenoids and servos. The flipper is a <b>solenoid</b>: a coil that becomes an electromagnet
+  and kicks it up. <b>Look through the clear front of the arena base to see the tech!</b></p>
 
-  <div class="warn" style="margin-top:5mm;">
+  <div class="warn" style="margin-top:3mm;">
     <b>&#9888; Safety:</b> the arena hazards only move when our referee has <b>armed</b> it, and
     they switch themselves off after a few seconds. Never reach into the arena. Bots go in and
     out only when the referee says so.
@@ -196,85 +207,90 @@
 </section>
 
 <!-- ======================= 4. REFEREE SHEET ======================= -->
-<section class="page">
+<section class="page ref">
   <div class="head"><img src="../site/public/assets/ibb-logo.png" alt=""><div class="t"><b>EARN TO FIRE</b><br>Referee &amp; volunteer sheet</div></div>
 
-  <div class="cols ref">
-    <div>
-      <h2 style="margin-top:0;">The 7-minute slot</h2>
-      <table class="slot">
-        <tr><td class="t">0:00</td><td>Group arrives. <b>New round (everything)</b>. Split into Red / Blue</td></tr>
-        <tr><td class="t">0:30</td><td>Read the <b>briefing</b> (page 2). Drivers take controllers</td></tr>
-        <tr><td class="t">1:30</td><td>Hands out. <b>ARM</b>. <b>START</b> the clock</td></tr>
-        <tr><td class="t">3:30</td><td>Round ends. <b>DISARM</b>. Read out the Standings</td></tr>
-        <tr><td class="t">4:00</td><td>Winner! Leaderboard line. Teacher handout (page 6)</td></tr>
-        <tr><td class="t">5:00</td><td>Bots back to start. Next group in</td></tr>
-      </table>
-      <p class="small">~50 groups a day. Longer slot? Play a second round and swap drivers and brains.</p>
+  <h2 style="margin-top:0;">The 7-minute slot</h2>
+  <div class="steps">
+    <div class="step"><div class="when">0:00</div><b>Reset</b><br>New round (everything). Split Red / Blue</div>
+    <div class="step"><div class="when">0:30</div><b>Brief</b><br>Read page 2. Drivers take controllers</div>
+    <div class="step"><div class="when">1:30</div><b>Go</b><br>Hands out. ARM. START</div>
+    <div class="step"><div class="when">3:30</div><b>Stop</b><br>DISARM. Read the Standings</div>
+    <div class="step"><div class="when">4:00</div><b>Wrap</b><br>Leaderboard. Teacher sheet</div>
+    <div class="step"><div class="when">5:00</div><b>Next</b><br>Bots back. Next group in</div>
+  </div>
+  <p class="small" style="margin-top:2mm;">About 50 groups a day. Longer slot? Play a second round and swap drivers and brains.</p>
 
+  <div class="cols" style="margin-top:4mm;">
+    <div>
       <h2>Start of each day</h2>
       <ul class="chk">
-        <li><span class="tick"></span>Team iPads: <code>http://192.168.0.102/kids/</code>, pick Red / Blue</li>
-        <li><span class="tick"></span>Referee iPad: <code>/kids/admin.html</code>, PIN from the lead (never written down)</li>
-        <li><span class="tick"></span>Shows <b>SAFE</b>; both iPads say <b>PRACTICE MODE</b></li>
-        <li><span class="tick"></span>One practice answer per weapon: scores move, arena doesn't</li>
-        <li><span class="tick"></span>Arena clear. <b>ARM</b>, fire each weapon, watch it stop</li>
-        <li><span class="tick"></span><b>ALL STOP</b>: everything stops, back to SAFE</li>
-        <li><span class="tick"></span>Bot batteries charged; spares on charge</li>
+        <li><span class="tick"></span>Team iPads open <code>192.168.0.102/kids</code>, pick Red / Blue</li>
+        <li><span class="tick"></span>Referee iPad opens <code>/kids/admin.html</code> (PIN from the lead)</li>
+        <li><span class="tick"></span>Referee shows <b>SAFE</b>; iPads show <b>PRACTICE MODE</b></li>
+        <li><span class="tick"></span>Answer one per weapon: scores move, arena doesn't</li>
+        <li><span class="tick"></span>Arena clear: <b>ARM</b>, fire each weapon, watch it stop</li>
+        <li><span class="tick"></span><b>ALL STOP</b> works and returns to SAFE</li>
+        <li><span class="tick"></span>Bot batteries charged, spares charging</li>
       </ul>
     </div>
     <div>
       <div class="warn">
         <h3>&#9888; Safety rules</h3>
         <ul>
-          <li><b>DISARM before any hand goes near the arena.</b> Every time.</li>
-          <li><b>ALL STOP</b> = disarm + stop clock + all spinners off. Use it freely.</li>
-          <li>Spinners stop themselves after 5 s; the pit comes back up after 10 s.</li>
-          <li>If the server drops out mid-spin, a spinner may keep going. <b>Switch off arena power.</b></li>
+          <li><b>DISARM before any hand goes near the arena.</b></li>
+          <li><b>ALL STOP</b> = disarm, stop clock, all spinners off. Use it freely.</li>
+          <li>Spinners stop after 5 s; the pit comes back up after 10 s.</li>
+          <li>Server drops out mid-spin? <b>Switch off arena power.</b></li>
           <li>After any restart the arena comes back <b>SAFE</b>.</li>
         </ul>
       </div>
+    </div>
+  </div>
 
+  <div class="cols" style="margin-top:4mm;">
+    <div>
       <h2>During the round</h2>
       <p>Tap <b>PITTED</b> under a bot the moment it drops. Mis-tap? <b>Undo</b>.
-      Both of a team's bots pitted = <b>KNOCKOUT</b>, the round ends.</p>
-
-      <h2>Buttons</h2>
+      Both of a team's bots pitted = <b>KNOCKOUT</b>: the round ends.</p>
       <table>
-        <tr><td><b>SAFE / ARMED</b></td><td>SAFE = practice: answers score, nothing moves</td></tr>
-        <tr><td><b>START / STOP</b></td><td>Clock. STOP pauses the questions too</td></tr>
+        <tr><td><b>SAFE / ARMED</b></td><td>SAFE = answers score, nothing moves</td></tr>
+        <tr><td><b>START / STOP</b></td><td>The clock. STOP pauses questions</td></tr>
         <tr><td><b>RESET</b></td><td>Clock back to 2:00, fresh fight</td></tr>
         <tr><td><b>&plusmn;5 / &plusmn;10</b></td><td>Fix STEM points by hand</td></tr>
         <tr><td><b>Clear cooldowns</b></td><td>Unstick the weapons</td></tr>
       </table>
-
+    </div>
+    <div>
       <h2>If something goes wrong</h2>
       <table>
-        <tr><td><i>Cannot reach the arena</i></td><td>Check iPad WiFi, reload page</td></tr>
-        <tr><td>Right answer, nothing moved</td><td>ARMED? Check log for <i>Pi FAILED</i></td></tr>
-        <tr><td>Referee page shows PIN screen</td><td>Server restarted; log in (it's SAFE)</td></tr>
-        <tr><td>5 wrong PINs</td><td>Locked 60 s; wait, retry</td></tr>
+        <tr><td><b>iPad: <i>Cannot reach the arena</i></b></td><td>Check its WiFi, reload the page</td></tr>
+        <tr><td><b>Right answer, nothing moved</b></td><td>Is it ARMED? Look for <i>Pi FAILED</i> in the activity log</td></tr>
+        <tr><td><b>Referee iPad back at PIN screen</b></td><td>Server restarted. Log in again; it will be SAFE</td></tr>
+        <tr><td><b>5 wrong PINs</b></td><td>Locked for 60 s. Wait, then retry</td></tr>
       </table>
     </div>
   </div>
 
-  <div class="foot"><span>Keep with the referee iPad</span><span>Page 4 &middot; Referee sheet</span></div>
+  <div class="foot"><span>Laminate &middot; keep with the referee iPad</span><span>Page 4 &middot; Referee sheet</span></div>
 </section>
 
 <!-- ======================= 5. LEADERBOARD ======================= -->
 <section class="page">
-  <div class="head"><img src="../site/public/assets/ibb-logo.png" alt=""><div class="t"><b>EARN TO FIRE</b><br>Leaderboard &middot; Day: ____________ &middot; Sheet ___</div></div>
+  <div class="head"><img src="../site/public/assets/ibb-logo.png" alt=""><div class="t"><b>EARN TO FIRE</b><br>Leaderboard</div>
+    <div class="dayfield">Day <span></span> Sheet <span class="short"></span></div></div>
 
   <div class="cols" style="margin-bottom:4mm;">
-    <div class="box thick" style="text-align:center;"><h3>Top team score today</h3><div style="height:8mm;"></div></div>
-    <div class="box thick" style="text-align:center;"><h3>Best STEM score today</h3><div style="height:8mm;"></div></div>
+    <div class="box thick"><h3>Top team score today</h3><div class="fill"></div></div>
+    <div class="box thick"><h3>Best STEM score today</h3><div class="fill"></div></div>
   </div>
 
   <table class="lb">
-    <thead><tr><th style="width:10%;">Time</th><th style="width:30%;">School / group</th>
-      <th style="width:12%;"><span class="tm red"></span>Red</th><th style="width:12%;"><span class="tm blue"></span>Blue</th>
-      <th style="width:12%;">Winner</th><th style="width:9%;">KO?</th><th>Notes</th></tr></thead>
+    <thead><tr><th style="width:11%;">Time</th><th style="width:31%;">School / group</th>
+      <th style="width:11%;"><span class="tm red"></span>Red</th><th style="width:11%;"><span class="tm blue"></span>Blue</th>
+      <th style="width:13%;">Winner</th><th style="width:7%;">KO</th><th>Notes</th></tr></thead>
     <tbody>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
@@ -297,8 +313,8 @@
       <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
     </tbody>
   </table>
-  <p class="small" style="margin-top:2.5mm;">Red / Blue = team totals from the referee iPad's <b>Standings</b> (STEM + bot points).
-  KO = both of one team's bots pitted. 20 groups per sheet, so <b>print 3 per day</b> (9 for the event).</p>
+  <p class="small" style="margin-top:2.5mm;"><b>Red / Blue</b> = team totals from the referee iPad's Standings (STEM + bot points).
+  <b>KO</b> = tick if both of one team's bots were pitted.</p>
 
   <div class="foot"><span>InfoSec Battle Bots &middot; STEMfest Newcastle, 6&ndash;8 October 2026</span><span>Page 5 &middot; Leaderboard</span></div>
 </section>
@@ -314,7 +330,7 @@
   <h2>Topics covered (KS3)</h2>
   <table>
     <tr><td style="width:36%;"><b>Forces &amp; levers</b></td><td>Fulcrums, Newton's laws, weight = mass &times; g, centre of gravity</td></tr>
-    <tr><td><b>Circuits &amp; electricity</b></td><td>Ohm's law (V = I &times; R), P = V &times; I, series circuits, fuses, short circuits</td></tr>
+    <tr><td><b>Circuits &amp; electricity</b></td><td>Ohm's law (V = I &times; R), P = V &times; I, series circuits, fuses, solenoids</td></tr>
     <tr><td><b>Gears &amp; motion</b></td><td>Speed = distance / time, RPM, gear ratios, circumference</td></tr>
     <tr><td><b>Code &amp; logic</b></td><td>Variables, loops, IF statements, binary, AND / NOT</td></tr>
     <tr><td><b>Sensors &amp; robot brains</b></td><td>Ultrasonic ranging, inputs vs outputs, actuators, microcontrollers</td></tr>
@@ -334,18 +350,18 @@
 
   <h2>How the arena works</h2>
   <p>The iPads talk over WiFi to a Windows server running a Node.js program. It checks each answer,
-  then sends commands to a <b>Raspberry Pi</b>, which switches the motors and pneumatics. It is real
+  then sends commands to a <b>Raspberry Pi</b>, which switches the arena's motors, solenoids and servos. It is real
   networking, coding and electronics: a good talking point for careers in engineering and cyber security.</p>
 
   <div class="box thick" style="margin-top:3mm;">
-    <h3>Bring InfoSec Battle Bots to your school</h3>
-    <p>Our schools programme is led by <b>Lewis Terry</b>. For school visits, workshops and
-    follow-up resources, get in touch:</p>
+    <h3>Want more? Termly schools competitions</h3>
+    <p>We're building towards a schools competition every term, working with local
+    <b>STEM Ambassadors</b>. Our schools work is led by <b>Lewis Terry</b>. Get in touch to take part:</p>
     <table>
-      <tr><td style="width:28%;"><b>Email</b></td><td>info@infosecbattlebots.com <span class="small">(mark it "Schools")</span></td></tr>
+      <tr><td style="width:28%;"><b>Email</b></td><td><b>info@infosecbattlebots.com</b> <span class="small">(subject "Schools")</span></td></tr>
       <tr><td><b>Schools page</b></td><td>www.infosecbattlebots.com/schools</td></tr>
       <tr><td><b>Follow us</b></td><td>@InfosecBots on X</td></tr>
-      <tr><td><b>The game's code</b></td><td>github.com/Ben-PyroGuy-Doch/ibb-arena <span class="small">(open source)</span></td></tr>
+      <tr><td><b>The game's code</b></td><td>github.com/Ben-PyroGuy-Doch/IBB-Arena-STEM-Challenge <span class="small">(open source)</span></td></tr>
     </table>
   </div>
 
