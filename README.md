@@ -102,10 +102,10 @@ For ages 12–14. Two team iPads (Red / Blue) plus a referee tablet.
 |--------|-------|-----|----------|-------------|
 | Flipper | Forces & Levers | 10 | 8 s | `/flipper` |
 | The Pit | Circuits & Electricity | 15 | 20 s | `/pitdown`, then `/pitup` after 10 s |
-| Spinner 1 | Gears & Motion | 20 | 15 s | `/spinner1`, off after 5 s |
-| Spinner 2 | Code & Logic | 20 | 15 s | `/spinner2`, off after 5 s |
-| Spinner 3 | Sensors & Robot Brains | 20 | 15 s | `/spinner3`, off after 5 s |
-| MEGA SPIN | Boss Challenge | 50 | 30 s | `/spinners`, off after 6 s |
+| Spinner 1 | Gears & Motion | 20 | 15 s | `/spinner1` or `/spinner1r` (random direction), off after 8 s |
+| Spinner 2 | Code & Logic | 20 | 15 s | `/spinner2` or `/spinner2r` (random direction), off after 8 s |
+| Spinner 3 | Sensors & Robot Brains | 20 | 15 s | `/spinner3` or `/spinner3r` (random direction), off after 8 s |
+| MEGA SPIN | Boss Challenge | 50 | 30 s | `/spinners` or `/spinnersr` (random direction), off after 10 s |
 
 All of it is tunable in the `WEAPONS` table at the top of `kids.js`. In
 `kids-questions.js` the correct answer is always option `a: 0`; the server shuffles them.

@@ -15,19 +15,21 @@ var crypto = require('crypto');
 var BANK = require('./kids-questions');
 
 // Pi paths each weapon triggers. `after` runs `secs` later (auto-off / pit back up).
+// When `fire` is a list, one entry is picked at random per fire - spinners use this to run
+// forwards or in reverse unpredictably. Keep `cooldown` longer than `after.secs`.
 var WEAPONS = [
   { id: 'flipper',  label: 'Flipper',    icon: '⚡',           topic: 'Forces & Levers',        points: 10, cooldown: 8,
     fire: '/flipper' },
   { id: 'pit',      label: 'The Pit',    icon: '🕳️', topic: 'Circuits & Electricity', points: 15, cooldown: 20,
     fire: '/pitdown', after: { secs: 10, path: '/pitup' } },
   { id: 'spinner1', label: 'Spinner 1',  icon: '⚙️',     topic: 'Gears & Motion',         points: 20, cooldown: 15,
-    fire: '/spinner1', after: { secs: 5, path: '/spinner1off' } },
+    fire: ['/spinner1', '/spinner1r'], after: { secs: 8, path: '/spinner1off' } },
   { id: 'spinner2', label: 'Spinner 2',  icon: '💻',     topic: 'Code & Logic',           points: 20, cooldown: 15,
-    fire: '/spinner2', after: { secs: 5, path: '/spinner2off' } },
+    fire: ['/spinner2', '/spinner2r'], after: { secs: 8, path: '/spinner2off' } },
   { id: 'spinner3', label: 'Spinner 3',  icon: '🤖',     topic: 'Sensors & Robot Brains', points: 20, cooldown: 15,
-    fire: '/spinner3', after: { secs: 5, path: '/spinner3off' } },
+    fire: ['/spinner3', '/spinner3r'], after: { secs: 8, path: '/spinner3off' } },
   { id: 'mega',     label: 'MEGA SPIN',  icon: '🌪️', topic: 'Boss Challenge',        points: 50, cooldown: 30,
-    fire: '/spinners', after: { secs: 6, path: '/spinnersoff' } }
+    fire: ['/spinners', '/spinnersr'], after: { secs: 10, path: '/spinnersoff' } }
 ];
 var BY_ID = {};
 WEAPONS.forEach(function (w) { BY_ID[w.id] = w; });
@@ -247,8 +249,10 @@ module.exports = function (app, opts) {
       log(who + ' earned ' + w.label + ' (arena not armed - no hardware)');
       return Promise.resolve('practice');
     }
-    log(who + ' FIRED ' + w.label);
-    return hit(w.fire).then(function (ok) {
+    var pick = Array.isArray(w.fire) ? crypto.randomInt(0, w.fire.length) : -1;
+    var path = pick === -1 ? w.fire : w.fire[pick];
+    log(who + ' FIRED ' + w.label + (pick === 1 ? ' (reverse)' : pick === 0 ? ' (forward)' : ''));
+    return hit(path).then(function (ok) {
       if (w.after) {
         // The follow-up runs even if the fire call errored: the Pi may have acted anyway.
         timers.push(setTimeout(function () { hit(w.after.path); }, w.after.secs * 1000));
