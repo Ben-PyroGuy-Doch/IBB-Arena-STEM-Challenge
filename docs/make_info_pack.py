@@ -110,7 +110,7 @@ bullets([
     ("Round clock: ", "start, stop and reset. Default 2:00, with presets from 1 to 5 minutes."),
     ("Bot fight: ", "a PITTED button for each of the four bots, with undo. The kids can name their bots."),
     ("Standings: ", "STEM points, bot time, pit bonus and total for each team, updated live."),
-    ("ALL STOP: ", "disarms, stops the clock and switches every spinner off, at any time."),
+    ("ALL STOP: ", "disarms, stops the clock, pauses the questions and switches every spinner off, at any time."),
     ("Auto-stops: ", "spinners switch off after 8 seconds (MEGA SPIN 10), and the pit closes itself after 10."),
 ])
 p = para("Rule for every volunteer: ")

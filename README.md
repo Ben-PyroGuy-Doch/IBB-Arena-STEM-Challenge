@@ -144,7 +144,8 @@ live activity log.
 - **Boots DISARMED on every restart.** Disarmed = practice mode: answers score, nothing moves.
 - Cooldowns are per weapon and **shared by both teams**, so a weapon can't be double-fired.
 - Spinners and the pit are always timed: the off / pit-up follow-up is scheduled with the fire.
-- **ALL STOP** disarms, cancels pending timers and sends `/spinnersoff`, armed or not.
+- **ALL STOP** disarms, stops the clock, **pauses the questions** (cancelling any open one), cancels
+  pending timers and sends `/spinnersoff`, whatever state the game is in. START resumes; re-arm separately.
 - While disarmed, the referee's raw Pi buttons only accept `*off` commands.
 - ⚠ The auto-off timers live in the Node process. If Node dies mid-spin, the spinner stays
   on until someone sends an off command.

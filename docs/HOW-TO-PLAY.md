@@ -73,7 +73,7 @@ fixes a mis-tap.
 
 | Button | Does |
 |---|---|
-| **ALL STOP** | Disarms, stops the clock, cancels pending moves, turns all spinners off |
+| **ALL STOP** | Disarms, stops the clock, pauses the questions, cancels pending moves, turns all spinners off |
 | **SAFE / ARMED** | Disarmed = practice: answers score but nothing moves. Starts SAFE on every restart |
 | **START / STOP / RESET** | Round clock. STOP pauses the game; RESET starts a fresh fight |
 | **PITTED** (one per bot) | Tap when a bot goes in. Tap the bot name to rename it |

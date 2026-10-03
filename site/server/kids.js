@@ -261,12 +261,16 @@ module.exports = function (app, opts) {
     });
   }
 
+  // Everything freezes: hardware, clock AND questions - whether or not the clock was running.
   function allStop(who) {
     state.armed = false;
     timerStop();
+    state.gameOn = false;
+    state.pending = { red: null, blue: null };
+    save();
     timers.forEach(clearTimeout);
     timers = [];
-    log('ALL STOP by ' + who + ' - disarmed');
+    log('ALL STOP by ' + who + ' - disarmed, game paused');
     return hit('/spinnersoff');
   }
 
