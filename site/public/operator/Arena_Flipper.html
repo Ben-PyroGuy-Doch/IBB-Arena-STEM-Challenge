@@ -2,8 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>IBB Arena Pit Control</title>
-
+    <title>IBB Arena Flipper Control</title>
     <style>
       body {
         background-color: #0f0f0f;
@@ -12,13 +11,8 @@
         text-align: center;
         padding: 2em;
       }
-      h1 {
-        color: #f1c40f;
-        text-shadow: 1px 1px 4px #000;
-        margin-bottom: 30px;
-      }
+      h1 { color: #f1c40f; text-shadow: 1px 1px 4px #000; margin-bottom: 30px; }
       h2 { color: #f1c40f; }
-
       button {
         background-color: #e63946;
         color: #f5f5f5;
@@ -36,15 +30,10 @@
         color: #0f0f0f;
         box-shadow: 0 0 15px #f1c40f;
       }
-
       .button-group {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        max-width: 800px;
-        margin: 0 auto;
+        display: flex; flex-wrap: wrap; justify-content: center;
+        max-width: 800px; margin: 0 auto;
       }
-
       .status {
         margin: 12px auto;
         max-width: 900px;
@@ -57,16 +46,19 @@
         white-space: pre-wrap;
         min-height: 48px;
       }
+      footer { margin-top: 40px; font-size: 0.9em; color: #888; }
+      a { color: #f1c40f; text-decoration: none; }
+      a:hover { text-decoration: underline; }
     </style>
 
-    <!-- Role Gate -->
+    <!-- Role gate -->
     <script>
       (function gate() {
         const token = sessionStorage.getItem('arenaToken');
         if (!token) location.href = 'index.html';
         try {
           const decoded = JSON.parse(atob(token));
-          const expectedRole = 'pit';
+          const expectedRole = 'flipper';
           if (decoded.role !== expectedRole) location.href = 'index.html';
         } catch {
           location.href = 'index.html';
@@ -76,57 +68,50 @@
   </head>
 
   <body>
-    <img src="assets/ibb-logo.png" alt="IBB Logo"
-      style="width: 360px; margin-bottom: 20px; filter: drop-shadow(0 0 10px #e63946);" />
+    <img src="../assets/ibb-logo.png" alt="IBB Logo"
+         style="width: 360px; margin-bottom: 20px; filter: drop-shadow(0 0 10px #e63946);" />
 
-    <h1>Pit Dashboard</h1>
+    <h1>Flipper Dashboard</h1>
 
     <div id="status" class="status"></div>
 
     <div class="button-group">
-      <button onclick="PitUp()">Pit Up</button>
-      <button onclick="PitDown()">Pit Down</button>
+      <button onclick="triggerFlipper()">Flipper</button>
     </div>
 
     <script>
-      // ----- CONFIG -----
-      const API_BASE = "http://192.168.0.102:3000";  // Your working API
+      // ---------- CONFIG ----------
+      // Your Node API is on the external network at :3000
+      // If you later set up IIS reverse-proxy (/api -> localhost:3000),
+      // you can set API_BASE = "" and the fetch URL will be relative.
+      const API_BASE = "http://192.168.0.102:3000";
 
       const statusBox = document.getElementById('status');
-
-      function setStatus(msg, isError = false) {
+      function setStatus(msg, isError=false) {
         statusBox.style.borderColor = isError ? '#e63946' : '#333';
         statusBox.style.color = isError ? '#e63946' : '#9ee493';
         statusBox.textContent = msg;
       }
 
-      async function PitUp() {
-        await callApi("/api/pit-up");
-      }
-
-      async function PitDown() {
-        await callApi("/api/pit-down");
-      }
-
-      async function callApi(path) {
+      async function triggerFlipper() {
+        setStatus("Triggering flipper...");
         try {
-          setStatus("Calling " + path + " ...");
-          const res = await fetch(`${API_BASE}${path}`);
+          const res = await fetch(`${API_BASE}/api/flipper`);
           const text = await res.text();
-
           if (!res.ok) {
             setStatus(`Error ${res.status}: ${text || 'Request failed'}`, true);
             return;
           }
-          setStatus(text || "OK");
+          setStatus(text || "Flipper OK");
         } catch (err) {
           console.error(err);
-          setStatus("Network error: " + err, true);
+          setStatus(`Network error: ${err}`, true);
         }
       }
 
-      document.addEventListener("keydown", e => {
-        if (e.key === "Enter") PitUp();
+      // Allow Enter key as alternate trigger
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") triggerFlipper();
       });
     </script>
   </body>

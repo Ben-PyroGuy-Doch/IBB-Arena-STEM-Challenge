@@ -13,9 +13,10 @@ From Git Bash in the repo root. It:
 
 1. Uploads `server.js`, `kids.js`, `kids-questions.js` and syntax-checks them **on the box**
    with `node --check`, aborting before the restart if anything is broken.
-2. Uploads `site/public/kids/*` to `C:\inetpub\IBBArena\public\kids\`.
+2. Uploads the site root pages, `operator/` and the `kids/` forwarding stubs to
+   `C:\inetpub\IBBArena\public\`, and removes stray old-layout files.
 3. Restarts the **`nodejsserver.exe`** Windows service.
-4. Hits `/health`, `/api/kids/state` and `/kids/team.html` to prove it came back.
+4. Hits `/health`, `/api/kids/state` and every page (`/`, team, referee, leaderboard, operator).
 
 It does **not** upload `pins.json`, `kids-config.json` or `kids-state.json`; those live
 only on the box. It does not touch the original `Arena_*.html` / `index.html` pages either.
@@ -89,7 +90,7 @@ The "post-quantum key exchange" warning on connect is cosmetic. 9.5 predates it.
 | File | Holds | Made by |
 |---|---|---|
 | `server\pins.json` | operator PINs → role pages | hand; template `pins.example.json`. Missing = PIN login disabled (logged at start-up) |
-| `server\kids-config.json` | referee PIN for `/kids/admin.html` | generated on first start, 6 random digits |
+| `server\kids-config.json` | referee PIN for `/admin.html` | generated on first start, 6 random digits |
 
 To read the referee PIN: `ssh arena type C:\inetpub\IBBArena\server\kids-config.json`.
 To change it, edit the file and restart the service.
@@ -114,9 +115,9 @@ ssh arena "powershell -NoProfile -Command Get-Content C:\inetpub\IBBArena\server
 There are no versions on the box, only what was last copied. To roll back:
 
 ```bash
-git checkout <good-commit> -- site/server site/public/kids
+git checkout <good-commit> -- site/server site/public
 ./deploy.sh
-git checkout HEAD -- site/server site/public/kids
+git checkout HEAD -- site/server site/public
 ```
 
 ## Pre-event checklist
@@ -142,4 +143,4 @@ PI_BASE=http://127.0.0.1:8765 node server.js
 ```
 
 Serve the pages with `python -m http.server 8081` from `site/public` and open
-`http://localhost:8081/kids/`. The pages find the API on `:3000` of the same host.
+`http://localhost:8081/`. The pages find the API on `:3000` of the same host.

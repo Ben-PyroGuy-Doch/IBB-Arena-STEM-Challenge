@@ -45,7 +45,9 @@ the 192.168.80.x side is never exposed.
 | Path | What it is |
 |---|---|
 | [`site/public/`](site/public) | IIS docroot — original PIN-login operator panels (`index.html`, `Arena_*.html`) |
-| [`site/public/kids/`](site/public/kids) | **Earn to Fire** — team page, referee page, landing page |
+| [`site/public/`](site/public) | **Earn to Fire** at the site root: split Red/Blue landing (`index.html`), `team.html`, referee `admin.html`, `leaderboard.html` |
+| [`site/public/operator/`](site/public/operator) | The original PIN-login operator panel (`index.html`, `Arena_*.html`) |
+| `site/public/kids/` | Forwarding stubs so old `/kids/…` bookmarks still work |
 | [`site/server/server.js`](site/server/server.js) | Express API: PIN login, Pi proxy routes, crane routes |
 | [`site/server/kids.js`](site/server/kids.js) | Earn to Fire game engine (mounted from one line in `server.js`) |
 | [`site/server/kids-questions.js`](site/server/kids-questions.js) | 72 STEM questions, 12 per weapon topic |
@@ -88,7 +90,7 @@ To run it on your own kit:
 
 ## Operator panel (original)
 
-`http://<server>/` → PIN → a role page. Roles: `root` (everything), `flipper`, `pit`,
+`http://<server>/operator/` → PIN → a role page. Roles: `root` (everything), `flipper`, `pit`,
 `spinners`, `crane`. PINs are read from `server/pins.json` on the box.
 
 > The token is unsigned base64 checked only in the browser, and the `/api/*` hardware
@@ -120,9 +122,10 @@ All of it is tunable in the `WEAPONS` table at the top of `kids.js`. In
 
 | URL | Device |
 |-----|--------|
-| `http://<server>/kids/` | landing: Red / Blue / Referee |
-| `/kids/team.html?team=red` · `?team=blue` | team iPads — Add to Home Screen |
-| `/kids/admin.html` | referee tablet — PIN in `server/kids-config.json` on the box |
+| `http://<server>/` | landing, no PIN: tap the **red or blue half** to join that team; Leaderboard and Referee login along the bottom |
+| `/team.html?team=red` · `?team=blue` | team iPads — Add to Home Screen |
+| `/admin.html` | referee tablet — PIN in `server/kids-config.json` on the box |
+| `/leaderboard.html` | public leaderboard by school — no PIN, refreshes every 5 s; great on a TV |
 
 **Bot fight:** each team also has **two bots** in the arena. Final score = **STEM + bot
 points**. Bot points are +1 per second per bot still in while the clock runs, plus +50 per
@@ -151,12 +154,12 @@ live activity log.
   on until someone sends an off command.
 
 ### Old-iPad compatibility
-The team iPads run **iOS 9–10 Safari**. All browser JS under `site/public/kids/` is
+The team iPads run **iOS 9–10 Safari**. All browser JS in the Earn to Fire pages is
 **ES5 + XMLHttpRequest** — no `fetch`, arrow functions, `let`/`const`, CSS variables, grid
 or flex `gap`. Check before deploying:
 
 ```bash
-npx acorn@8 --ecma5 --silent site/public/kids/kids-common.js
+npx acorn@8 --ecma5 --silent site/public/kids-common.js
 ```
 
 The pages call the API on `:3000` of whatever host served them, so they keep working if the

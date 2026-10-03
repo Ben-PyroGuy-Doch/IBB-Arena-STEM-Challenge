@@ -1,121 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>IBB Arena Control</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>IBB Arena - Earn to Fire</title>
+  <link rel="stylesheet" href="kids.css">
   <style>
-    body {
-      background-color: #0f0f0f;
-      color: #f5f5f5;
-      font-family: 'Segoe UI', sans-serif;
-      text-align: center;
-      padding-top: 3em;
-    }
-    h2 {
-      color: #f1c40f;
-    }
-    input[type="password"] {
-      padding: 10px;
-      font-size: 1.2em;
-      border: 2px solid #e63946;
-      background-color: #1a1a1a;
-      color: #f5f5f5;
-      border-radius: 5px;
-    }
-    button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      font-size: 1em;
-      background-color: #e63946;
-      color: #f5f5f5;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #f1c40f;
-      color: #0f0f0f;
-    }
-    #pin-error {
-      color: #e63946;
-      margin-top: 10px;
-      font-weight: bold;
-    }
+    /* Split landing page: tap your team's half to go straight to its page. iOS 9 safe (flexbox, no grid/vars). */
+    html, body { height: 100%; }
+    body { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
+    .head { text-align: center; padding: 14px 10px 10px; background: #0f0f0f; }
+    .head img { height: 54px; vertical-align: middle; }
+    .head h1 { display: inline-block; vertical-align: middle; margin: 0 0 0 14px; color: #f1c40f;
+      font-size: 34px; letter-spacing: 2px; }
+    .head p { margin: 6px 0 0; color: #bbb; font-size: 17px; }
+    .split { -webkit-flex: 1; flex: 1; display: -webkit-flex; display: flex; min-height: 300px; }
+    .side { -webkit-flex: 1; flex: 1; display: -webkit-flex; display: flex; -webkit-flex-direction: column;
+      flex-direction: column; -webkit-justify-content: center; justify-content: center; -webkit-align-items: center;
+      align-items: center; text-decoration: none; color: #fff; text-align: center; padding: 20px; }
+    .side.red { background: #c0392b; }
+    .side.blue { background: #2471a3; }
+    .side:active { opacity: .8; }
+    .side .big { font-size: 64px; font-weight: 900; letter-spacing: 2px; line-height: 1; }
+    .side .join { margin-top: 18px; font-size: 24px; font-weight: 800; padding: 14px 30px; border: 3px solid #fff;
+      border-radius: 40px; }
+    .side .hint { margin-top: 14px; font-size: 16px; opacity: .85; }
+    .bar { display: -webkit-flex; display: flex; background: #1a1a1a; border-top: 3px solid #333; }
+    .bar a { -webkit-flex: 1; flex: 1; text-align: center; padding: 16px 8px; font-size: 20px; font-weight: 800;
+      text-decoration: none; color: #f5f5f5; border-right: 1px solid #333; }
+    .bar a:last-child { border-right: 0; }
+    .bar a.lb { color: #f1c40f; }
+    .bar a.op { -webkit-flex: 0 0 auto; flex: 0 0 auto; padding: 16px 18px; font-size: 13px; font-weight: 400; color: #777; }
   </style>
 </head>
 <body>
-
-  <img src="assets/ibb-logo.png" 
-       alt="IBB Logo" 
-       style="width: 360px; margin-bottom: 20px; filter: drop-shadow(0 0 10px #e63946);">
-
-  <div id="pin-entry">
-    <h2>Enter PIN to Unlock Dashboard</h2>
-    <input type="password" id="pinInput" placeholder="Enter PIN" />
-    <br>
-    <button onclick="verifyPIN()">Unlock</button>
-    <p id="pin-error"></p>
+  <div class="head">
+    <img src="assets/ibb-logo.png" alt="InfoSec Battle Bots"><h1>EARN TO FIRE</h1>
+    <p>Answer STEM questions. Fire the arena. Battle the bots.</p>
   </div>
 
-<script>
-  async function verifyPIN() {
-    const pin = document.getElementById('pinInput').value.trim();
-    const errorEl = document.getElementById('pin-error');
-    errorEl.textContent = "";
+  <div class="split">
+    <a class="side red" href="team.html?team=red">
+      <div class="big">RED</div>
+      <div class="join">JOIN RED TEAM</div>
+      <div class="hint">Tap anywhere on red</div>
+    </a>
+    <a class="side blue" href="team.html?team=blue">
+      <div class="big">BLUE</div>
+      <div class="join">JOIN BLUE TEAM</div>
+      <div class="hint">Tap anywhere on blue</div>
+    </a>
+  </div>
 
-    if (!pin) {
-      errorEl.textContent = "Please enter a PIN.";
-      return;
-    }
-
-    // IMPORTANT: Your API lives on 192.168.0.102:3000
-    const API_BASE = "http://192.168.0.102:3000";
-
-    try {
-      const res = await fetch(`${API_BASE}/api/verify-pin`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pin })
-      });
-
-      const text = await res.text();
-      let data;
-
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch (_) {
-        errorEl.textContent = "Server returned invalid response.";
-        console.error("Non-JSON response:", text);
-        return;
-      }
-
-      if (!res.ok) {
-        errorEl.textContent = data.error || `Login failed (${res.status})`;
-        return;
-      }
-
-      if (data.success) {
-        // Save token (if needed)
-        if (data.token) {
-          sessionStorage.setItem("arenaToken", data.token);
-        }
-
-        // Since your dashboards are hosted on port 80, redirect there
-        window.location.href = `http://192.168.0.102/${data.page}`;
-      } else {
-        errorEl.textContent = "Incorrect PIN";
-      }
-
-    } catch (err) {
-      console.error(err);
-      errorEl.textContent = "Network error or server unreachable";
-    }
-  }
-
-  // Allow Enter key
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") verifyPIN();
-  });
-</script>
-
+  <div class="bar">
+    <a class="lb" href="leaderboard.html">&#127942; Leaderboard</a>
+    <a href="admin.html">&#128274; Referee login</a>
+    <a class="op" href="operator/">Operator</a>
+  </div>
 </body>
 </html>

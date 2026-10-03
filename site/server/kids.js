@@ -56,6 +56,9 @@ var SURVIVE_PTS_PER_SEC = 1;  // per bot, per second it is still in while the cl
 var PIT_BONUS = 50;           // to the other team for each bot pitted
 
 var STATE_FILE = path.join(__dirname, 'kids-state.json');
+// Leaderboard results live in their own file so resetting scores never touches them.
+var RESULTS_FILE = path.join(__dirname, 'kids-results.json');
+var DEFAULT_NAMES = ['red team', 'blue team'];
 var CONFIG_FILE = path.join(__dirname, 'kids-config.json');
 
 module.exports = function (app, opts) {
@@ -176,7 +179,74 @@ module.exports = function (app, opts) {
     bankFight();
     save();
     var sv = scoreView();
+    recordResult(sv, timer.reason === 'ko');
     log('ROUND OVER (' + timer.reason + ') - ' + sv[0].name + ' ' + sv[0].score + ', ' + sv[1].name + ' ' + sv[1].score);
+  }
+
+  // ---------- leaderboard results ----------
+  // One "game" = one group: everything between two score resets. Each round end upserts
+  // that game's row with the current names and totals, so a second round updates rather
+  // than duplicates it.
+  var results = { currentGame: 1, nextGame: 2, games: [] };
+  try {
+    var r0 = JSON.parse(fs.readFileSync(RESULTS_FILE, 'utf8'));
+    if (r0 && Array.isArray(r0.games)) results = r0;
+  } catch (e) { /* first run */ }
+
+  function saveResults() {
+    fs.writeFile(RESULTS_FILE, JSON.stringify(results, null, 1), function (err) {
+      if (err) console.error('KIDS: could not save results', err.message);
+    });
+  }
+
+  function localDay(ts) {
+    var d = new Date(ts);
+    return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+  }
+
+  function recordResult(sv, ko) {
+    var side = function (s) { return { name: s.name, score: s.score, stem: s.stem, bot: s.bot }; };
+    var red = side(sv[0]), blue = side(sv[1]);
+    var winner = red.score > blue.score ? 'red' : (blue.score > red.score ? 'blue' : 'draw');
+    var g = null;
+    for (var i = 0; i < results.games.length; i++) if (results.games[i].id === results.currentGame) g = results.games[i];
+    if (!g) {
+      g = { id: results.currentGame, at: now(), rounds: 0 };
+      results.games.push(g);
+    }
+    g.updated = now();
+    g.day = localDay(g.at);
+    g.rounds += 1;
+    g.red = red; g.blue = blue; g.winner = winner; g.ko = g.ko || ko;
+    saveResults();
+  }
+
+  function newGame() {
+    results.currentGame = results.nextGame++;
+    saveResults();
+  }
+
+  function leaderboard(day) {
+    var games = results.games.filter(function (g) { return !day || g.day === day; });
+    var schools = {};
+    games.forEach(function (g) {
+      ['red', 'blue'].forEach(function (t) {
+        var s = g[t];
+        var key = String(s.name || '').trim().toLowerCase();
+        if (!key || DEFAULT_NAMES.indexOf(key) !== -1) return;
+        var row = schools[key] || (schools[key] = { name: s.name.trim(), best: 0, games: 0, wins: 0, total: 0 });
+        row.best = Math.max(row.best, s.score);
+        row.games += 1;
+        row.total += s.score;
+        if (g.winner === t) row.wins += 1;
+      });
+    });
+    var ranked = Object.keys(schools).map(function (k) { return schools[k]; })
+      .sort(function (a, b) { return b.best - a.best || b.wins - a.wins || a.name.localeCompare(b.name); });
+    var days = [];
+    results.games.forEach(function (g) { if (days.indexOf(g.day) === -1) days.push(g.day); });
+    var recent = games.slice().sort(function (a, b) { return b.updated - a.updated; }).slice(0, 12);
+    return { schools: ranked, recent: recent, days: days.sort(), today: localDay(now()), gameCount: games.length };
   }
 
   function timerStart() {
@@ -423,6 +493,7 @@ module.exports = function (app, opts) {
     res.json({
       gameOn: state.gameOn, armed: state.armed,
       scores: scoreView(), weapons: weaponView(null), timer: timerView(),
+      results: leaderboard(null).recent, currentGame: results.currentGame,
       pending: { red: state.pending.red && state.pending.red.weapon, blue: state.pending.blue && state.pending.blue.weapon },
       log: state.log.slice(0, 25)
     });
@@ -484,6 +555,23 @@ module.exports = function (app, opts) {
     res.json({ ok: true, timer: timerView() });
   });
 
+  // Public, read-only: the leaderboard page polls this. ?day=YYYY-MM-DD, or omit for all days.
+  app.get('/api/kids/leaderboard', function (req, res) {
+    var day = /^\d{4}-\d{2}-\d{2}$/.test(req.query.day || '') ? req.query.day : null;
+    res.json(leaderboard(day));
+  });
+
+  // Remove a mistaken result from the leaderboard.
+  app.post('/api/kids/admin/result/delete', admin, function (req, res) {
+    var id = parseInt((req.body || {}).id, 10);
+    var before = results.games.length;
+    results.games = results.games.filter(function (g) { return g.id !== id; });
+    if (results.games.length === before) return res.status(404).json({ error: 'No such result' });
+    saveResults();
+    log('Admin deleted leaderboard result #' + id);
+    res.json({ ok: true });
+  });
+
   app.post('/api/kids/admin/stop', admin, function (req, res) {
     allStop('admin').then(function (ok) { res.json({ ok: ok }); });
   });
@@ -498,6 +586,7 @@ module.exports = function (app, opts) {
     if (scope === 'scores' || scope === 'all') {
       TEAMS.forEach(function (t) { state.teams[t].score = 0; state.teams[t].bot = 0; state.teams[t].wins = 0; });
       timerReset();
+      newGame();  // the next round's result is a new leaderboard row
     }
     if (scope === 'all') {
       state.asked = { red: {}, blue: {} };
@@ -520,7 +609,7 @@ module.exports = function (app, opts) {
 
   app.post('/api/kids/admin/name', admin, function (req, res) {
     var b = req.body || {};
-    var name = String(b.name || '').trim().slice(0, 24);
+    var name = String(b.name || '').trim().slice(0, 40);  // room for school names
     if (!validTeam(b.team) || !name) return res.status(400).json({ error: 'Bad request' });
     state.teams[b.team].name = name;
     save();

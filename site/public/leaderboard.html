@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>IBB Arena - Leaderboard</title>
+  <link rel="stylesheet" href="kids.css">
+  <style>
+    body { padding-bottom: 30px; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+    .tabs { text-align: center; margin: 16px 0 6px; }
+    .tab { font-size: 18px; font-weight: 800; padding: 10px 22px; margin: 4px; border-radius: 10px;
+      border: 2px solid #555; background: #1c1c1c; color: #ccc; }
+    .tab.on { border-color: #f1c40f; color: #f1c40f; }
+    h2 { color: #f1c40f; font-size: 22px; letter-spacing: 1px; margin: 22px 0 10px; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; color: #999; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;
+      padding: 8px 10px; border-bottom: 2px solid #444; }
+    td { padding: 12px 10px; border-bottom: 1px solid #2a2a2a; font-size: 22px; }
+    td.rank { width: 70px; font-size: 30px; font-weight: 900; text-align: center; color: #888; }
+    tr.p1 td.rank { color: #f1c40f; } tr.p2 td.rank { color: #d0d3d4; } tr.p3 td.rank { color: #cd7f32; }
+    tr.p1 td { font-size: 30px; font-weight: 900; }
+    td.best { font-weight: 900; color: #f1c40f; text-align: right; width: 140px; }
+    td.num { text-align: right; width: 110px; color: #ccc; }
+    .empty { text-align: center; color: #888; font-size: 22px; padding: 40px 0; }
+    .recent td { font-size: 17px; }
+    .recent .w { color: #2ecc71; font-weight: 800; }
+    .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; }
+    .dot.red { background: #e74c3c; } .dot.blue { background: #3498db; }
+    .foot { text-align: center; color: #666; font-size: 13px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <img src="assets/ibb-logo.png" alt="IBB">
+    <div class="title">EARN TO FIRE &middot; LEADERBOARD</div>
+  </div>
+
+  <div class="wrap">
+    <div class="tabs" id="tabs"></div>
+
+    <h2 id="schoolsTitle">TOP SCHOOLS</h2>
+    <table>
+      <thead><tr><th></th><th>School</th><th style="text-align:right;">Best score</th><th style="text-align:right;">Games</th><th style="text-align:right;">Wins</th></tr></thead>
+      <tbody id="schools"></tbody>
+    </table>
+    <div class="empty hidden" id="empty">No results yet. Name the teams after their schools on the referee page, then play a round!</div>
+
+    <h2>LATEST GAMES</h2>
+    <table class="recent"><tbody id="recent"></tbody></table>
+
+    <div class="foot" id="foot"></div>
+  </div>
+
+<script src="kids-common.js"></script>
+<script>
+  var $ = KIDS.$;
+  var DAY = KIDS.param('day');   // null = all days; ?day=YYYY-MM-DD pins a day
+  var lastData = null;
+
+  function dayLabel(d) {
+    var names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    var p = d.split('-');
+    var dt = new Date(+p[0], +p[1] - 1, +p[2]);
+    return names[dt.getDay()] + ' ' + (+p[2]);
+  }
+
+  function pick(day) {
+    DAY = day;
+    load();
+  }
+
+  function renderTabs(data) {
+    var h = '<button class="tab' + (DAY ? '' : ' on') + '" onclick="pick(null)">All days</button>';
+    for (var i = 0; i < data.days.length; i++) {
+      var d = data.days[i];
+      h += '<button class="tab' + (DAY === d ? ' on' : '') + '" onclick="pick(\'' + d + '\')">' +
+           dayLabel(d) + (d === data.today ? ' (today)' : '') + '</button>';
+    }
+    $('tabs').innerHTML = h;
+  }
+
+  function render(data) {
+    lastData = data;
+    renderTabs(data);
+    $('schoolsTitle').innerHTML = DAY ? 'TOP SCHOOLS &middot; ' + dayLabel(DAY).toUpperCase() : 'TOP SCHOOLS &middot; ALL DAYS';
+
+    var h = '';
+    for (var i = 0; i < data.schools.length; i++) {
+      var s = data.schools[i];
+      var medal = i === 0 ? '&#129351;' : i === 1 ? '&#129352;' : i === 2 ? '&#129353;' : (i + 1);
+      h += '<tr class="p' + (i + 1) + '"><td class="rank">' + medal + '</td><td>' + KIDS.esc(s.name) + '</td>' +
+           '<td class="best">' + s.best + '</td><td class="num">' + s.games + '</td><td class="num">' + s.wins + '</td></tr>';
+    }
+    $('schools').innerHTML = h;
+    $('empty').className = data.schools.length ? 'empty hidden' : 'empty';
+
+    var r = '';
+    for (var j = 0; j < data.recent.length; j++) {
+      var g = data.recent[j];
+      var side = function (t) {
+        var x = g[t];
+        return '<span class="dot ' + t + '"></span><span class="' + (g.winner === t ? 'w' : '') + '">' +
+               KIDS.esc(x.name) + ' ' + x.score + '</span>';
+      };
+      r += '<tr><td>' + side('red') + '</td><td>vs</td><td>' + side('blue') + '</td><td>' +
+           (g.winner === 'draw' ? 'Draw' : '') + (g.ko ? ' KO' : '') + '</td></tr>';
+    }
+    $('recent').innerHTML = r || '<tr><td class="empty">-</td></tr>';
+    $('foot').innerHTML = data.gameCount + ' game' + (data.gameCount === 1 ? '' : 's') + ' played &middot; updates every 5 seconds';
+  }
+
+  function load() {
+    KIDS.get('/api/kids/leaderboard' + (DAY ? '?day=' + DAY : ''), null, function (err, data) {
+      if (!err) render(data);
+    });
+  }
+
+  function poll() {
+    load();
+    setTimeout(poll, 5000);
+  }
+  poll();
+</script>
+</body>
+</html>

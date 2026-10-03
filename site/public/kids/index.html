@@ -2,16 +2,16 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>IBB Arena - Kids</title>
-  <link rel="stylesheet" href="kids.css">
+  <title>Moved</title>
+  <script>
+    // The kids' pages moved from /kids/ to the site root (3 Oct 2026). Old bookmarks
+    // (/kids/, /kids/team.html?team=red, /kids/admin.html, /kids/leaderboard.html) all land here
+    // via the 404 page or directly, and are sent on with their query string intact.
+    var file = location.pathname.split('/').pop() || '';
+    location.replace('../' + (file === 'index.html' ? '' : file) + location.search);
+  </script>
 </head>
-<body style="text-align:center; padding-top:30px;">
-  <img src="../assets/ibb-logo.png" alt="IBB" style="width:320px; max-width:80%;">
-  <h1 style="color:#f1c40f; font-size:40px; margin:10px 0 20px;">EARN TO FIRE</h1>
-  <a class="pick team-red" href="team.html?team=red">RED TEAM</a>
-  <a class="pick team-blue" href="team.html?team=blue">BLUE TEAM</a>
-  <a class="pick admin" href="admin.html">Referee</a>
+<body style="background:#0f0f0f;color:#ccc;font-family:sans-serif;text-align:center;padding-top:60px;">
+  Moved. <a href="../" style="color:#f1c40f;">Go to Earn to Fire</a>
 </body>
 </html>
