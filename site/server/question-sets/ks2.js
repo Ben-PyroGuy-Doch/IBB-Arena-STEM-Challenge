@@ -1,4 +1,4 @@
-// kids-questions.js - the LIVE set (currently KS2, copied from question-sets/ks2.js)
+// question-sets/ks2.js
 // KS2 (ages 7-11) question bank for Earn to Fire. Same shape as kids-questions.js:
 // one category per weapon, 12 each. `a` is the index of the correct option in `o`
 // (always 0 here; the server shuffles options). `e` is shown after every answer.
