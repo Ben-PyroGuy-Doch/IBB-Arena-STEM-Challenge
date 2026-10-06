@@ -153,16 +153,25 @@ live activity log.
 - ⚠ The auto-off timers live in the Node process. If Node dies mid-spin, the spinner stays
   on until someone sends an off command.
 
-### Question sets (KS2 / KS3)
-Two banks live in `site/server/question-sets/`: **`ks2.js`** (ages 7-11, the default since
-STEMfest 2026) and **`ks3.js`** (ages 12-14). The server only reads `kids-questions.js`, the
-live copy. Check any set with `node site/server/question-sets/check.js <file>`.
+### Question sets
+Banks live in `site/server/question-sets/`:
+- **`ks2.js`** ages 7-11 (the live default since STEMfest 2026)
+- **`ks3.js`** ages 12-14
+- **`cyber-basic.js`** workplace / general cyber awareness
+- **`cyber-pro.js`** infosec pros (BSides etc.)
+
+The server only reads `kids-questions.js`, the live copy. A set may export an optional
+`meta` (`{title, topics:{<weaponId>:label}}`) to relabel the weapon cards and name the set;
+the cyber sets use this. The referee page shows the live set's title top-right. Robot
+behaviour, points and Pi paths never change. Check any set with
+`node site/server/question-sets/check.js <file>`.
 
 **Offline swap (no network at the venue):** copy `usb-update/` to a USB stick, plug it into the
-arena server and run `1-SWITCH-TO-KS2.bat` or `2-SWITCH-TO-KS3.bat` as Administrator. It checks
-the file, backs up the live set, installs, restarts `nodejsserver.exe`, checks `/health`, and
-rolls back by itself on any failure. Scores and leaderboard are kept. `ARENA_TEST=<folder>` runs
-it against a fake server folder for testing.
+arena server and run the matching `SWITCH-TO-*.bat` (KS2 / KS3 / CYBER-BASIC / CYBER-PRO) as
+Administrator. It checks the file, backs up the live set **and `kids.js`**, installs both,
+`node --check`s the code, restarts `nodejsserver.exe`, checks `/health`, and rolls both back by
+itself on any failure. Scores and leaderboard are kept. `ARENA_TEST=<folder>` runs the file
+logic against a fake server folder for testing (skips the restart).
 
 ### Old-iPad compatibility
 The team iPads run **iOS 9–10 Safari**. All browser JS in the Earn to Fire pages is

@@ -54,6 +54,7 @@
   <div class="topbar">
     <img src="assets/ibb-logo.png" alt="IBB">
     <div class="title">REFEREE</div>
+    <span id="qset" style="color:#888;font-size:14px;margin-right:12px;"></span>
     <button class="btn hidden" id="logout" onclick="logout()">Log out</button>
   </div>
 
@@ -215,6 +216,7 @@
 
   function render(s) {
     S = s;
+    $('qset').innerHTML = s.questionSet ? 'Questions: ' + KIDS.esc(s.questionSet) : '';
     var a = $('armBtn');
     a.className = 'big half ' + (s.armed ? 'armed' : 'disarmed');
     a.innerHTML = s.armed ? '&#9888; ARMED - tap to disarm' : 'SAFE - tap to ARM';
