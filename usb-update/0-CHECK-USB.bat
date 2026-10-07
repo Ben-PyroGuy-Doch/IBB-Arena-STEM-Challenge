@@ -4,6 +4,6 @@ if %errorlevel% neq 0 (
   powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
   exit /b
 )
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0update.ps1" -Set cyber-pro
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0update.ps1" -Check
 echo.
 pause
