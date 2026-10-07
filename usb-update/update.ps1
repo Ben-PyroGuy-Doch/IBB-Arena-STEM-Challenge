@@ -34,15 +34,20 @@ Write-Host ''
 Write-Host "  EARN TO FIRE - question update   ($(Get-Date))"
 Write-Host "  =================================================="
 
+# Test-only env hooks (all unset in normal use, so production behaviour is unchanged):
+#   ARENA_TEST   = server folder AND skip admin + skip restart (pure file test)
+#   ARENA_SRV    = override the server folder only (restart still runs)
+#   ARENA_NOSVC  = skip the Windows service restart (health poll still runs)
+#   ARENA_HEALTHURL / ARENA_POLLTRIES = health URL / number of 3s polls
 # --- server folder ---------------------------------------------------------
-$srv = if ($test) { $test } else { 'C:\inetpub\IBBArena\server' }
+$srv = if ($env:ARENA_SRV) { $env:ARENA_SRV } elseif ($test) { $test } else { 'C:\inetpub\IBBArena\server' }
 Say "Server folder: $srv"
 if (-not (Test-Path (Join-Path $srv 'kids.js'))) {
   Fail "arena server not found at $srv. Is this the right machine?"
 }
 
 # --- admin check (real runs only) ------------------------------------------
-if (-not $test) {
+if (-not $test -and -not $env:ARENA_SRV) {
   $admin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
   if (-not $admin) { Fail "not running as Administrator. Right-click the file and choose 'Run as administrator'." }
 }
@@ -118,17 +123,21 @@ try {
     Say "[5/5] (test mode - skipping the restart)"
   } else {
     Say "[5/5] Restarting the game server (can take up to a minute)..."
-    $svc = Get-Service | Where-Object { $_.Name -like '*nodejs*' -or $_.DisplayName -like '*node*' } | Select-Object -First 1
-    if (-not $svc) { throw "could not find the arena Windows service" }
-    try { Restart-Service -InputObject $svc -Force -ErrorAction Stop } catch {
-      Stop-Service -InputObject $svc -Force -ErrorAction SilentlyContinue
-      Start-Sleep 2
-      Start-Service -InputObject $svc -ErrorAction SilentlyContinue
+    if (-not $env:ARENA_NOSVC) {
+      $svc = Get-Service | Where-Object { $_.Name -like '*nodejs*' -or $_.DisplayName -like '*node*' } | Select-Object -First 1
+      if (-not $svc) { throw "could not find the arena Windows service" }
+      try { Restart-Service -InputObject $svc -Force -ErrorAction Stop } catch {
+        Stop-Service -InputObject $svc -Force -ErrorAction SilentlyContinue
+        Start-Sleep 2
+        Start-Service -InputObject $svc -ErrorAction SilentlyContinue
+      }
     }
+    $healthUrl = if ($env:ARENA_HEALTHURL) { $env:ARENA_HEALTHURL } else { 'http://localhost:3000/health' }
+    $maxTries  = if ($env:ARENA_POLLTRIES) { [int]$env:ARENA_POLLTRIES } else { 20 }
     $healthy = $false
-    for ($i = 0; $i -lt 20; $i++) {
+    for ($i = 0; $i -lt $maxTries; $i++) {
       Start-Sleep 3
-      try { if ((Invoke-WebRequest -UseBasicParsing 'http://localhost:3000/health' -TimeoutSec 5).StatusCode -eq 200) { $healthy = $true; break } } catch {}
+      try { if ((Invoke-WebRequest -UseBasicParsing $healthUrl -TimeoutSec 5).StatusCode -eq 200) { $healthy = $true; break } } catch {}
       Write-Host "       ...waiting ($([int](($i+1)*3))s)"
     }
     if (-not $healthy) { throw "the game server did not answer after the restart" }
